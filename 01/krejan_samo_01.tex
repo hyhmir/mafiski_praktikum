@@ -71,7 +71,7 @@
 \bigskip
 \bf\Large 1.~naloga: Airyjevi funkciji
 }
-\author{}
+\author{Samo Krejan, 28231092}
 \date{}
 
 \newcommand{\Ai}{\mathrm{Ai}}
@@ -84,6 +84,28 @@
 \maketitle
 \vspace{-1cm}
 
+\section{Uvod}
+
+Airyjevi funkciji $\Ai$ in $\Bi$ 
+se v fiziki pojavljata predvsem v optiki in kvantni mehaniki
+\cite{Airy_use}.  Definirani sta kot neodvisni rešitvi enačbe
+%
+\begin{equation*}
+  y''(x) -xy(x) = 0
+\end{equation*}
+%
+in sta predstavljivi v integralski obliki
+%
+\begin{equation*}
+  \Ai(x) = \frac{1}{\pi} \int_0^\infty \cos (t^3/3 + x t) \dd t \>,\quad
+  \Bi(x) = \frac{1}{\pi} \int_0^\infty \left[ \mathrm{e}^{-t^3/3 + x t}
+  + \sin (t^3/3 + x t) \right] \dd t \>.
+\end{equation*}
+%
+
+
+\bibliographystyle{plain}
+\bibliography{references}
 
 
 \end{document}

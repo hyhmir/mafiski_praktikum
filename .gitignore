@@ -3,4 +3,6 @@
 *.fls
 *.log
 *.synctex.gz
+*.bbl
+*.blg
 /venv
