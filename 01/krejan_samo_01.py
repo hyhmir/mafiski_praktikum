@@ -39,6 +39,7 @@ def L(x: mp.mpf, n: int=100) -> mp.mpf:
             break
         term *= multiply
         out += term
+    return out
 
 
 def P(x: mp.mpf, n: int) -> mp.mpf:
@@ -50,6 +51,7 @@ def P(x: mp.mpf, n: int) -> mp.mpf:
             break
         term *= multiply
         out += term
+    return out
 
 
 def Q(x: mp.mpf, n: int) -> mp.mpf:
@@ -61,6 +63,7 @@ def Q(x: mp.mpf, n: int) -> mp.mpf:
             break
         term *= multiply
         out += term
+    return out
 
 print(alpha*f(mp.mpf(5), 100000) - beta*g(mp.mpf(5), 100000))
 print(mp.airyai(5))
