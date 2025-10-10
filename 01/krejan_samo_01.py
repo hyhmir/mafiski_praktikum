@@ -122,7 +122,7 @@ def absolute(x, func, ref, abs_err, max=500):
     f = func(x, i)
     end = time.perf_counter()
     timer = end - start
-    return f[0], f[1], timer
+    return (f[0], f[1], timer, err)
 
 
 def relative(x, func, ref, rel_err, max=500):
@@ -139,31 +139,20 @@ def relative(x, func, ref, rel_err, max=500):
     f = func(x, i)
     end = time.perf_counter()
     timer = end - start
-    return f[0], f[1], timer
+    return (f[0], f[1], timer, err)
 
 
 # graphs
 
-x = np.arange(-30, -10, 0.1)
-
-# y = [Ai_neg(i, 100)[0] for i in x]
-
-# y1 = [float(i) for i in y]
-# y2 = [float(mp.airyai(i)) for i in x]
-
-# y3 = np.abs([float(mp.airyai(i) - Ai_neg(mp.mpf(i), 100)[0]) for i in x])
-
-# # y4 = [float(Ai_neg(mp.mpf(i), 1000)[1]) for i in x]
+x_neg = np.arange(-45, -5, 0.1)
+x_mac = np.arange(-20, 20, 0.1)
+x_pos = np.arange(5, 45, 0.1)
 
 
-# plt.plot(x, y1)
-# plt.plot(x, y2)
-# # plt.yscale('log')
-# plt.show()
-# plt.plot(x, y3)
-# plt.yscale('log')
-# plt.show()
-# # plt.plot(x, y4)
-# # plt.yscale('log')
-# # plt.show()
+y_neg_abs = np.zeros((len(x_neg), 4))
+y_mac_abs = np.zeros((len(x_mac), 4))
+y_pos_abs = np.zeros((len(x_pos), 4))
 
+y_neg_abs = np.zeros((len(x_neg), 4))
+y_mac_abs = np.zeros((len(x_mac), 4))
+y_pos_abs = np.zeros((len(x_pos), 4))
