@@ -3,13 +3,14 @@ import numpy as np
 import mpmath
 from mpmath import mp
 import matplotlib.pyplot as plt
+import time
 
 
 # constants and presets
 
 mp.dps = 500
-alpha = mp.mpf('0.355028053887817239')
-beta = mp.mpf('0.258819403792806798')
+alpha = mp.mpf('0.35502805388781723926006318600418317639797917419917724058332651030081004245')
+beta = mp.mpf('0.25881940379280679840518356018920396347909113835493458221000181385610277267')
 
 
 # funcs
@@ -107,28 +108,62 @@ def Bi_pos(x, n):
     return mp.exp(ksi) * l[0] / (mp.sqrt(mp.pi) * mp.sqrt(mp.sqrt(x))), l[1]
 
 
+def absolute(x, func, ref, abs_err, max=500):
+    n = 1
+    i = n
+    while n < max:
+        f = func(x, n)
+        err = np.abs(f[0] - ref)
+        i = f[1]
+        if err <= abs_err:
+            break
+        n += 1
+    start = time.perf_counter()
+    f = func(x, i)
+    end = time.perf_counter()
+    timer = end - start
+    return f[0], f[1], timer
+
+
+def relative(x, func, ref, rel_err, max=500):
+    n = 1
+    i = n
+    while n < max:
+        f = func(x, n)
+        err = np.abs(f[0] - ref) / np.abs(ref)
+        i = f[1]
+        if err <= rel_err:
+            break
+        n += 1
+    start = time.perf_counter()
+    f = func(x, i)
+    end = time.perf_counter()
+    timer = end - start
+    return f[0], f[1], timer
+
+
 # graphs
 
 x = np.arange(-30, -10, 0.1)
 
-y = [Ai_neg(i, 100)[0] for i in x]
+# y = [Ai_neg(i, 100)[0] for i in x]
 
-y1 = [float(i) for i in y]
-y2 = [float(mp.airyai(i)) for i in x]
+# y1 = [float(i) for i in y]
+# y2 = [float(mp.airyai(i)) for i in x]
 
-y3 = np.abs([float(mp.airyai(i) - Ai_neg(mp.mpf(i), 100)[0]) for i in x])
+# y3 = np.abs([float(mp.airyai(i) - Ai_neg(mp.mpf(i), 100)[0]) for i in x])
 
-# y4 = [float(Ai_neg(mp.mpf(i), 1000)[1]) for i in x]
+# # y4 = [float(Ai_neg(mp.mpf(i), 1000)[1]) for i in x]
 
 
-plt.plot(x, y1)
-plt.plot(x, y2)
-# plt.yscale('log')
-plt.show()
-plt.plot(x, y3)
-plt.yscale('log')
-plt.show()
-# plt.plot(x, y4)
+# plt.plot(x, y1)
+# plt.plot(x, y2)
+# # plt.yscale('log')
+# plt.show()
+# plt.plot(x, y3)
 # plt.yscale('log')
 # plt.show()
+# # plt.plot(x, y4)
+# # plt.yscale('log')
+# # plt.show()
 
