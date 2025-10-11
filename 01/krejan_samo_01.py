@@ -1,19 +1,21 @@
-# imports
+########### imports ###########
 import numpy as np
 import mpmath
 from mpmath import mp
 import matplotlib.pyplot as plt
 import time
+from tqdm import tqdm
+from concurrent.futures import ProcessPoolExecutor
 
 
-# constants and presets
+########### constants and presets ###########
 
 mp.dps = 500
 alpha = mp.mpf('0.35502805388781723926006318600418317639797917419917724058332651030081004245')
 beta = mp.mpf('0.25881940379280679840518356018920396347909113835493458221000181385610277267')
 
 
-# funcs
+########### funcs ###########
 
 
 def f(x, n):
@@ -115,7 +117,9 @@ def absolute(x, func, ref, abs_err, max=500):
         f = func(x, n)
         err = np.abs(f[0] - ref)
         i = f[1]
-        if err <= abs_err:
+        if i < n:
+            break
+        if err < abs_err:
             break
         n += 1
     start = time.perf_counter()
@@ -132,7 +136,9 @@ def relative(x, func, ref, rel_err, max=500):
         f = func(x, n)
         err = np.abs(f[0] - ref) / np.abs(ref)
         i = f[1]
-        if err <= rel_err:
+        if i < n:
+            break
+        if err < rel_err:
             break
         n += 1
     start = time.perf_counter()
@@ -142,17 +148,162 @@ def relative(x, func, ref, rel_err, max=500):
     return (f[0], f[1], timer, err)
 
 
-# graphs
+########### graphs ###########
+
+def compute_section(x_values, Ai, Bi, label, position=0):
+    yai_abs = np.zeros((len(x_values), 4))
+    yai_rel = np.zeros((len(x_values), 4))
+    ybi_abs = np.zeros((len(x_values), 4))
+    ybi_rel = np.zeros((len(x_values), 4))
+
+    for i in tqdm(range(len(x_values)), desc=label, position=position):
+        yai_abs[i, :] = np.array(absolute(x_values[i], Ai, mp.airyai(x_values[i]), 1e-10))
+        yai_rel[i, :] = np.array(relative(x_values[i], Ai, mp.airyai(x_values[i]), 1e-10))
+        ybi_abs[i, :] = np.array(absolute(x_values[i], Bi, mp.airyai(x_values[i]), 1e-10))
+        ybi_rel[i, :] = np.array(relative(x_values[i], Bi, mp.airyai(x_values[i]), 1e-10))
+    
+    return (yai_abs, yai_rel, ybi_abs, ybi_rel)
 
 x_neg = np.arange(-45, -5, 0.1)
 x_mac = np.arange(-20, 20, 0.1)
 x_pos = np.arange(5, 45, 0.1)
 
+with ProcessPoolExecutor() as executor:
+    futures = [
+        executor.submit(compute_section, x_neg, Ai_neg, Bi_neg, "neg", 0),
+        executor.submit(compute_section, x_mac, Ai_mac, Bi_mac, "mac", 1),
+        executor.submit(compute_section, x_pos, Ai_pos, Bi_pos, "pos", 2),
+    ]
 
-y_neg_abs = np.zeros((len(x_neg), 4))
-y_mac_abs = np.zeros((len(x_mac), 4))
-y_pos_abs = np.zeros((len(x_pos), 4))
+    # Collect results (each future returns a tuple of 4 arrays)
+    (yai_neg_abs, yai_neg_rel, ybi_neg_abs, ybi_neg_rel), \
+    (yai_mac_abs, yai_mac_rel, ybi_mac_abs, ybi_mac_rel), \
+    (yai_pos_abs, yai_pos_rel, ybi_pos_abs, ybi_pos_rel) = [f.result() for f in futures]
 
-y_neg_abs = np.zeros((len(x_neg), 4))
-y_mac_abs = np.zeros((len(x_mac), 4))
-y_pos_abs = np.zeros((len(x_pos), 4))
+
+# yai_neg_abs = np.zeros((len(x_neg), 4))
+# yai_mac_abs = np.zeros((len(x_mac), 4))
+# yai_pos_abs = np.zeros((len(x_pos), 4))
+
+# yai_neg_rel = np.zeros((len(x_neg), 4))
+# yai_mac_rel = np.zeros((len(x_mac), 4))
+# yai_pos_rel = np.zeros((len(x_pos), 4))
+
+
+# ybi_neg_abs = np.zeros((len(x_neg), 4))
+# ybi_mac_abs = np.zeros((len(x_mac), 4))
+# ybi_pos_abs = np.zeros((len(x_pos), 4))
+
+# ybi_neg_rel = np.zeros((len(x_neg), 4))
+# ybi_mac_rel = np.zeros((len(x_mac), 4))
+# ybi_pos_rel = np.zeros((len(x_pos), 4))
+
+
+# for i in tqdm(range(len(x_neg))):
+#     yai_neg_abs[i, :] = np.array(absolute(x_neg[i], Ai_neg, mp.airyai(x_neg[i]), 1e-10))
+#     yai_neg_rel[i, :] = np.array(relative(x_neg[i], Ai_neg, mp.airyai(x_neg[i]), 1e-10))
+#     ybi_neg_abs[i, :] = np.array(absolute(x_neg[i], Bi_neg, mp.airyai(x_neg[i]), 1e-10))
+#     ybi_neg_rel[i, :] = np.array(relative(x_neg[i], Bi_neg, mp.airyai(x_neg[i]), 1e-10))
+
+
+# for i in tqdm(range(len(x_mac))):
+#     yai_mac_abs[i, :] = np.array(absolute(x_mac[i], Ai_mac, mp.airyai(x_mac[i]), 1e-10))
+#     yai_mac_rel[i, :] = np.array(relative(x_mac[i], Ai_mac, mp.airyai(x_mac[i]), 1e-10))
+#     ybi_mac_abs[i, :] = np.array(absolute(x_mac[i], Bi_mac, mp.airyai(x_mac[i]), 1e-10))
+#     ybi_mac_rel[i, :] = np.array(relative(x_mac[i], Bi_mac, mp.airyai(x_mac[i]), 1e-10))
+
+
+# for i in tqdm(range(len(x_pos))):
+#     yai_pos_abs[i, :] = np.array(absolute(x_pos[i], Ai_pos, mp.airyai(x_pos[i]), 1e-10))
+#     yai_pos_rel[i, :] = np.array(relative(x_pos[i], Ai_pos, mp.airyai(x_pos[i]), 1e-10))
+#     ybi_pos_abs[i, :] = np.array(absolute(x_pos[i], Bi_pos, mp.airyai(x_pos[i]), 1e-10))
+#     ybi_pos_rel[i, :] = np.array(relative(x_pos[i], Bi_pos, mp.airyai(x_pos[i]), 1e-10))
+
+
+#### AI abs ####
+
+plt.plot(x_neg, yai_neg_abs[:, 0])
+plt.plot(x_mac, yai_mac_abs[:, 0])
+plt.plot(x_pos, yai_pos_abs[:, 0])
+plt.show()
+
+plt.plot(x_neg, yai_neg_abs[:, 1])
+plt.plot(x_mac, yai_mac_abs[:, 1])
+plt.plot(x_pos, yai_pos_abs[:, 1])
+plt.show()
+
+plt.plot(x_neg, yai_neg_abs[:, 2])
+plt.plot(x_mac, yai_mac_abs[:, 2])
+plt.plot(x_pos, yai_pos_abs[:, 2])
+plt.show()
+
+plt.plot(x_neg, yai_neg_abs[:, 3])
+plt.plot(x_mac, yai_mac_abs[:, 3])
+plt.plot(x_pos, yai_pos_abs[:, 3])
+plt.show()
+
+#### AI rel ####
+
+plt.plot(x_neg, yai_neg_rel[:, 0])
+plt.plot(x_mac, yai_mac_rel[:, 0])
+plt.plot(x_pos, yai_pos_rel[:, 0])
+plt.show()
+
+plt.plot(x_neg, yai_neg_rel[:, 1])
+plt.plot(x_mac, yai_mac_rel[:, 1])
+plt.plot(x_pos, yai_pos_rel[:, 1])
+plt.show()
+
+plt.plot(x_neg, yai_neg_rel[:, 2])
+plt.plot(x_mac, yai_mac_rel[:, 2])
+plt.plot(x_pos, yai_pos_rel[:, 2])
+plt.show()
+
+plt.plot(x_neg, yai_neg_rel[:, 3])
+plt.plot(x_mac, yai_mac_rel[:, 3])
+plt.plot(x_pos, yai_pos_rel[:, 3])
+plt.show()
+
+#### Bi abs ####
+
+plt.plot(x_neg, ybi_neg_abs[:, 0])
+plt.plot(x_mac, ybi_mac_abs[:, 0])
+plt.plot(x_pos, ybi_pos_abs[:, 0])
+plt.show()
+
+plt.plot(x_neg, ybi_neg_abs[:, 1])
+plt.plot(x_mac, ybi_mac_abs[:, 1])
+plt.plot(x_pos, ybi_pos_abs[:, 1])
+plt.show()
+
+plt.plot(x_neg, ybi_neg_abs[:, 2])
+plt.plot(x_mac, ybi_mac_abs[:, 2])
+plt.plot(x_pos, ybi_pos_abs[:, 2])
+plt.show()
+
+plt.plot(x_neg, ybi_neg_abs[:, 3])
+plt.plot(x_mac, ybi_mac_abs[:, 3])
+plt.plot(x_pos, ybi_pos_abs[:, 3])
+plt.show()
+
+#### Bi rel ####
+
+plt.plot(x_neg, ybi_neg_rel[:, 0])
+plt.plot(x_mac, ybi_mac_rel[:, 0])
+plt.plot(x_pos, ybi_pos_rel[:, 0])
+plt.show()
+
+plt.plot(x_neg, ybi_neg_rel[:, 1])
+plt.plot(x_mac, ybi_mac_rel[:, 1])
+plt.plot(x_pos, ybi_pos_rel[:, 1])
+plt.show()
+
+plt.plot(x_neg, ybi_neg_rel[:, 2])
+plt.plot(x_mac, ybi_mac_rel[:, 2])
+plt.plot(x_pos, ybi_pos_rel[:, 2])
+plt.show()
+
+plt.plot(x_neg, ybi_neg_rel[:, 3])
+plt.plot(x_mac, ybi_mac_rel[:, 3])
+plt.plot(x_pos, ybi_pos_rel[:, 3])
+plt.show()
