@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import time
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
+import scienceplots
 
 
 ########### constants and presets ###########
@@ -159,8 +160,8 @@ def compute_section(x_values, Ai, Bi, label, position=0):
     for i in tqdm(range(len(x_values)), desc=label, position=position):
         yai_abs[i, :] = np.array(absolute(x_values[i], Ai, mp.airyai(x_values[i]), 1e-10))
         yai_rel[i, :] = np.array(relative(x_values[i], Ai, mp.airyai(x_values[i]), 1e-10))
-        ybi_abs[i, :] = np.array(absolute(x_values[i], Bi, mp.airyai(x_values[i]), 1e-10))
-        ybi_rel[i, :] = np.array(relative(x_values[i], Bi, mp.airyai(x_values[i]), 1e-10))
+        ybi_abs[i, :] = np.array(absolute(x_values[i], Bi, mp.airybi(x_values[i]), 1e-10))
+        ybi_rel[i, :] = np.array(relative(x_values[i], Bi, mp.airybi(x_values[i]), 1e-10))
     
     return (yai_abs, yai_rel, ybi_abs, ybi_rel)
 
@@ -180,130 +181,20 @@ with ProcessPoolExecutor() as executor:
     (yai_mac_abs, yai_mac_rel, ybi_mac_abs, ybi_mac_rel), \
     (yai_pos_abs, yai_pos_rel, ybi_pos_abs, ybi_pos_rel) = [f.result() for f in futures]
 
+### zgornji del kode mi je napisal chat-gpt ko sem ga prosil naj paralelizira mojo kodo.
 
-# yai_neg_abs = np.zeros((len(x_neg), 4))
-# yai_mac_abs = np.zeros((len(x_mac), 4))
-# yai_pos_abs = np.zeros((len(x_pos), 4))
+plt.style.use('science')
 
-# yai_neg_rel = np.zeros((len(x_neg), 4))
-# yai_mac_rel = np.zeros((len(x_mac), 4))
-# yai_pos_rel = np.zeros((len(x_pos), 4))
+plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*20.5//40], yai_mac_abs[len(x_mac)*15//40:len(x_mac)*20.5//40][:, 0], ls='-', label='Ai')
+plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*20.5//40], [mp.airyai(x) for x in x_mac[len(x_mac)*15//40:len(x_mac)*20.5//40]], ls='--', label='Ai ref')
+plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*20.5//40], ybi_mac_abs[len(x_mac)*15//40:len(x_mac)*20.5//40][:, 0], ls='-', label='Bi')
+plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*20.5//40], [mp.airybi(x) for x in x_mac[len(x_mac)*15//40:len(x_mac)*20.5//40]], ls='--', label='Bi ref')
 
+plt.grid()
+plt.legend()
+plt.title('Maclaurinov približek in referenčne vrednosti')
+plt.xlabel('x')
+plt.ylabel('y')
 
-# ybi_neg_abs = np.zeros((len(x_neg), 4))
-# ybi_mac_abs = np.zeros((len(x_mac), 4))
-# ybi_pos_abs = np.zeros((len(x_pos), 4))
-
-# ybi_neg_rel = np.zeros((len(x_neg), 4))
-# ybi_mac_rel = np.zeros((len(x_mac), 4))
-# ybi_pos_rel = np.zeros((len(x_pos), 4))
-
-
-# for i in tqdm(range(len(x_neg))):
-#     yai_neg_abs[i, :] = np.array(absolute(x_neg[i], Ai_neg, mp.airyai(x_neg[i]), 1e-10))
-#     yai_neg_rel[i, :] = np.array(relative(x_neg[i], Ai_neg, mp.airyai(x_neg[i]), 1e-10))
-#     ybi_neg_abs[i, :] = np.array(absolute(x_neg[i], Bi_neg, mp.airyai(x_neg[i]), 1e-10))
-#     ybi_neg_rel[i, :] = np.array(relative(x_neg[i], Bi_neg, mp.airyai(x_neg[i]), 1e-10))
-
-
-# for i in tqdm(range(len(x_mac))):
-#     yai_mac_abs[i, :] = np.array(absolute(x_mac[i], Ai_mac, mp.airyai(x_mac[i]), 1e-10))
-#     yai_mac_rel[i, :] = np.array(relative(x_mac[i], Ai_mac, mp.airyai(x_mac[i]), 1e-10))
-#     ybi_mac_abs[i, :] = np.array(absolute(x_mac[i], Bi_mac, mp.airyai(x_mac[i]), 1e-10))
-#     ybi_mac_rel[i, :] = np.array(relative(x_mac[i], Bi_mac, mp.airyai(x_mac[i]), 1e-10))
-
-
-# for i in tqdm(range(len(x_pos))):
-#     yai_pos_abs[i, :] = np.array(absolute(x_pos[i], Ai_pos, mp.airyai(x_pos[i]), 1e-10))
-#     yai_pos_rel[i, :] = np.array(relative(x_pos[i], Ai_pos, mp.airyai(x_pos[i]), 1e-10))
-#     ybi_pos_abs[i, :] = np.array(absolute(x_pos[i], Bi_pos, mp.airyai(x_pos[i]), 1e-10))
-#     ybi_pos_rel[i, :] = np.array(relative(x_pos[i], Bi_pos, mp.airyai(x_pos[i]), 1e-10))
-
-
-#### AI abs ####
-
-plt.plot(x_neg, yai_neg_abs[:, 0])
-plt.plot(x_mac, yai_mac_abs[:, 0])
-plt.plot(x_pos, yai_pos_abs[:, 0])
-plt.show()
-
-plt.plot(x_neg, yai_neg_abs[:, 1])
-plt.plot(x_mac, yai_mac_abs[:, 1])
-plt.plot(x_pos, yai_pos_abs[:, 1])
-plt.show()
-
-plt.plot(x_neg, yai_neg_abs[:, 2])
-plt.plot(x_mac, yai_mac_abs[:, 2])
-plt.plot(x_pos, yai_pos_abs[:, 2])
-plt.show()
-
-plt.plot(x_neg, yai_neg_abs[:, 3])
-plt.plot(x_mac, yai_mac_abs[:, 3])
-plt.plot(x_pos, yai_pos_abs[:, 3])
-plt.show()
-
-#### AI rel ####
-
-plt.plot(x_neg, yai_neg_rel[:, 0])
-plt.plot(x_mac, yai_mac_rel[:, 0])
-plt.plot(x_pos, yai_pos_rel[:, 0])
-plt.show()
-
-plt.plot(x_neg, yai_neg_rel[:, 1])
-plt.plot(x_mac, yai_mac_rel[:, 1])
-plt.plot(x_pos, yai_pos_rel[:, 1])
-plt.show()
-
-plt.plot(x_neg, yai_neg_rel[:, 2])
-plt.plot(x_mac, yai_mac_rel[:, 2])
-plt.plot(x_pos, yai_pos_rel[:, 2])
-plt.show()
-
-plt.plot(x_neg, yai_neg_rel[:, 3])
-plt.plot(x_mac, yai_mac_rel[:, 3])
-plt.plot(x_pos, yai_pos_rel[:, 3])
-plt.show()
-
-#### Bi abs ####
-
-plt.plot(x_neg, ybi_neg_abs[:, 0])
-plt.plot(x_mac, ybi_mac_abs[:, 0])
-plt.plot(x_pos, ybi_pos_abs[:, 0])
-plt.show()
-
-plt.plot(x_neg, ybi_neg_abs[:, 1])
-plt.plot(x_mac, ybi_mac_abs[:, 1])
-plt.plot(x_pos, ybi_pos_abs[:, 1])
-plt.show()
-
-plt.plot(x_neg, ybi_neg_abs[:, 2])
-plt.plot(x_mac, ybi_mac_abs[:, 2])
-plt.plot(x_pos, ybi_pos_abs[:, 2])
-plt.show()
-
-plt.plot(x_neg, ybi_neg_abs[:, 3])
-plt.plot(x_mac, ybi_mac_abs[:, 3])
-plt.plot(x_pos, ybi_pos_abs[:, 3])
-plt.show()
-
-#### Bi rel ####
-
-plt.plot(x_neg, ybi_neg_rel[:, 0])
-plt.plot(x_mac, ybi_mac_rel[:, 0])
-plt.plot(x_pos, ybi_pos_rel[:, 0])
-plt.show()
-
-plt.plot(x_neg, ybi_neg_rel[:, 1])
-plt.plot(x_mac, ybi_mac_rel[:, 1])
-plt.plot(x_pos, ybi_pos_rel[:, 1])
-plt.show()
-
-plt.plot(x_neg, ybi_neg_rel[:, 2])
-plt.plot(x_mac, ybi_mac_rel[:, 2])
-plt.plot(x_pos, ybi_pos_rel[:, 2])
-plt.show()
-
-plt.plot(x_neg, ybi_neg_rel[:, 3])
-plt.plot(x_mac, ybi_mac_rel[:, 3])
-plt.plot(x_pos, ybi_pos_rel[:, 3])
-plt.show()
+plt.savefig('01/mac_draw.pdf', dpi=512, bbox_inches='tight')
+plt.clf()

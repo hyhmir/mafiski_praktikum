@@ -172,7 +172,23 @@ Pri oceni napak si po\-ma\-gaj s programi, ki znajo računati s poljubno
 natančnostjo, na primer z {\sc Mathematico} in/ali paketi {\sc mpmath} in {\sc decimal} v programskem
 jeziku {\sc Python}.
 
+\subsection{Maclaurinov približek}
 
+
+Člene vrst $f$ in $g$ zapišemo rekurzivno, in $n$-ti člen zapišemo kot produkt prejšnjega in količnika:
+
+\begin{equation*}
+  f_n = f_{n-1} \cdot \frac{f_n}{f_{n-1}} = f_{n-1} \cdot \frac{x^3}{3n(3n - 1)} \>, \qquad f_0 = 1
+\end{equation*}
+
+\begin{equation*}
+  g_n = g_{n-1} \cdot \frac{g_n}{g_{n-1}} = g_{n-1} \cdot \frac{x^3}{3n(3n + 1)} \>, \qquad g_0 = x
+\end{equation*}
+Dobljene rezultate bomo skozi nalogo primerjali z vgrajenima funkcijama $mpmath.airyai()$ in $mpmath.airybi()$, ki od dejanske vrednosti odstopata manj kot $\ee{-20}$ \cite{airy_luka}.
+
+\subsection{Asimptotski približek za velike negativne $x$}
+
+\subsection{Asimptotski približek za velike pozitivne $x$}
 
 
 
