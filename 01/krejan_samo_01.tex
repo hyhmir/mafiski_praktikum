@@ -184,7 +184,59 @@ jeziku {\sc Python}.
 \begin{equation*}
   g_n = g_{n-1} \cdot \frac{g_n}{g_{n-1}} = g_{n-1} \cdot \frac{x^3}{3n(3n + 1)} \>, \qquad g_0 = x
 \end{equation*}
-Dobljene rezultate bomo skozi nalogo primerjali z vgrajenima funkcijama $mpmath.airyai()$ in $mpmath.airybi()$, ki od dejanske vrednosti odstopata manj kot $\ee{-20}$ \cite{airy_luka}.
+Dobljene rezultate bomo skozi nalogo primerjali z vgrajenima funkcijama $mpmath.airyai()$ in $mpmath.airybi()$, ki gotovo od dejanske vrednosti odstopata manj kot $\ee{-20}$ \cite{airy_luka}.
+
+\begin{figure}[ht]
+\begin{center}
+  \includegraphics[width=10cm]{graphs/mac_draw.pdf}
+  \caption{Maclaurinov približek $Ai$ in $Bi$ primerjan z vgrajenima funkcija}
+  \label{fig: mac_draw}
+\end{center}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.42\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/mac_abs_err.pdf}
+    % \caption{First plot.}
+    % \label{fig:plot1}
+  \end{minipage}\hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/mac_abs_err_n.pdf}
+    % \caption{Second plot.}
+    % \label{fig:plot2}
+  \end{minipage}
+  \caption{Absolutna napaka naše implementacije in število členov potrebnih, da le ta ostane pod $10^{10}$. Iz grafov vidimo, da se napaka sicer z oddaljenostjo od izhodišča strmo veča, a vsakič ko bi le ta zgrešila željeno natančnost se vrsti doda en člen. To pojasni močno zobničasto naravo napake.}
+  \label{fig: mac_abs_err}
+\end{figure}
+
+
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.42\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/mac_rel_err.pdf}
+    % \caption{First plot.}
+    % \label{fig:plot1}
+  \end{minipage}\hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/mac_rel_err_n.pdf}
+    % \caption{Second plot.}
+    % \label{fig:plot2}
+  \end{minipage}
+  \caption{Relativna napaka in potrebno število členov vrste za doseg te napake. Karakteristika je ekvivalentna tisti pri absolutni napaki. Tudi potrebno število členov se ne spremeni znatno, le pri večjih pozitivnih vrednostih opazimo, da potrebujemo vedno več členov za funkcijo $Ai$.}
+  \label{fig: mac_rel_err}
+\end{figure}
+
+Že na prvi pogled, ko grafiramo dobljene vrednosti za obe funkciji in jih primerjamo z vgrajenima funkcijama vidimo (slika: \ref{fig: mac_draw}), da je Maclaurinov približek precej uspešen. To še dodatno potrdita sliki \ref{fig: mac_abs_err} in \ref{fig: mac_rel_err}, kjer vidimo, da nam je na območju $(-4, 4)$ uspelo \textit{ujeti} tako željeno absolutno kot relativno napako z manj kot dvajsetimi členi.
+
+Zanimivost, ki se mi jo zdi vredno omeniti lahko opazimo na desni sliki \ref{fig: mac_rel_err}, kjer vidimo, da se število potrebnih členov funkcije $Ai$ hitro veča. To je seveda smiselno, ko pomislimo, da tam $Ai$ dosega vrednosti zelo blizu $0$ in je tako seveda za enako relativno natančnost, potrebna veliko boljša absolutna natančnost.
+\newpage
+
+
 
 \subsection{Asimptotski približek za velike negativne $x$}
 

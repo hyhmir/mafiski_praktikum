@@ -7,12 +7,11 @@ import time
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
 import scienceplots
-from cycler import cycler
 
 
 ########### constants and presets ###########
 
-mp.dps = 500
+mp.dps = 100 # nastavi na 500 za namene plotanja
 alpha = mp.mpf('0.35502805388781723926006318600418317639797917419917724058332651030081004245')
 beta = mp.mpf('0.25881940379280679840518356018920396347909113835493458221000181385610277267')
 
@@ -166,563 +165,565 @@ def compute_section(x_values, Ai, Bi, label, position=0):
     
     return (yai_abs, yai_rel, ybi_abs, ybi_rel)
 
-x_neg = np.arange(-45, -5, 0.1)
-x_mac = np.arange(-20, 20, 0.1)
-x_pos = np.arange(5, 45, 0.1)
-
-with ProcessPoolExecutor() as executor:
-    futures = [
-        executor.submit(compute_section, x_neg, Ai_neg, Bi_neg, "neg", 0),
-        executor.submit(compute_section, x_mac, Ai_mac, Bi_mac, "mac", 1),
-        executor.submit(compute_section, x_pos, Ai_pos, Bi_pos, "pos", 2),
-    ]
-
-    # Collect results (each future returns a tuple of 4 arrays)
-    (yai_neg_abs, yai_neg_rel, ybi_neg_abs, ybi_neg_rel), \
-    (yai_mac_abs, yai_mac_rel, ybi_mac_abs, ybi_mac_rel), \
-    (yai_pos_abs, yai_pos_rel, ybi_pos_abs, ybi_pos_rel) = [f.result() for f in futures]
-
-### zgornji del kode mi je napisal chat-gpt ko sem ga prosil naj paralelizira mojo kodo.
-
-plt.style.use(['science', 'bright'])
-# plt.rcParams['axes.prop_cycle'] = cycler(color=['#1f77b4', '#ff7f0e'])
-
-#### mac ####
-
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], yai_mac_abs[len(x_mac)*15//40:len(x_mac)*21//40][:, 0], ls='-', label='Ai')
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], ybi_mac_abs[len(x_mac)*15//40:len(x_mac)*21//40][:, 0], ls='-', label='Bi')
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], [mp.airyai(x) for x in x_mac[len(x_mac)*15//40:len(x_mac)*21//40]], ls='--', label='Ai ref')
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], [mp.airybi(x) for x in x_mac[len(x_mac)*15//40:len(x_mac)*21//40]], ls='--', label='Bi ref')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Maclaurinov približek in referenčne vrednosti')
-plt.xlabel('x')
-plt.ylabel('y')
-
-plt.savefig('01/graphs/mac_draw.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], yai_mac_abs[len(x_mac)*15//40:len(x_mac)*25//40][:, 3], ls='-', label='Ai')
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], ybi_mac_abs[len(x_mac)*15//40:len(x_mac)*25//40][:, 3], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Maclaurin - Absolutna napaka')
-plt.xlabel('x')
-plt.ylabel('abs. napaka')
-
-plt.savefig('01/graphs/mac_abs_err.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], yai_mac_abs[len(x_mac)*15//40:len(x_mac)*25//40][:, 1], ls='-', label='Ai')
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], ybi_mac_abs[len(x_mac)*15//40:len(x_mac)*25//40][:, 1], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Maclaurin - Število členov za fiksno absolutno napako')
-plt.xlabel('x')
-plt.ylabel('število členov')
-
-plt.savefig('01/graphs/mac_abs_err_n.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], yai_mac_rel[len(x_mac)*15//40:len(x_mac)*25//40][:, 3], ls='-', label='Ai')
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], ybi_mac_rel[len(x_mac)*15//40:len(x_mac)*25//40][:, 3], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Maclaurin - relativna napaka')
-plt.xlabel('x')
-plt.ylabel('rel. napaka')
-
-plt.savefig('01/graphs/mac_rel_err.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], yai_mac_rel[len(x_mac)*15//40:len(x_mac)*25//40][:, 1], ls='-', label='Ai')
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], ybi_mac_rel[len(x_mac)*15//40:len(x_mac)*25//40][:, 1], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Maclaurin - Število členov za fiksno relativno napako')
-plt.xlabel('x')
-plt.ylabel('število členov')
-
-plt.savefig('01/graphs/mac_rel_err_n.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-### positive ####
-
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 0], ls='-', label='Ai')
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], [mp.airyai(x) for x in x_pos[len(x_pos)*5//40:len(x_pos)*35//40]], ls='--', label='Ai ref')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski približek $Ai$ za pozitivne $x$')
-plt.xlabel('x')
-plt.ylabel('y')
-
-plt.yscale('log')
-
-plt.savefig('01/graphs/pos_draw_ai.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 0], ls='-', label='Bi')
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], [mp.airybi(x) for x in x_pos[len(x_pos)*5//40:len(x_pos)*35//40]], ls='--', label='Bi ref')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski približek $Bi$ za pozitivne $x$')
-plt.xlabel('x')
-plt.ylabel('y')
-
-plt.yscale('log')
-
-plt.savefig('01/graphs/pos_draw_bi.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 3], ls='-', label='Ai')
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 3], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski za pozitivne - Absolutna napaka')
-plt.xlabel('x')
-plt.ylabel('abs. napaka')
-
-plt.yscale('linear')
-
-plt.savefig('01/graphs/pos_abs_err.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Ai')
-# plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski $Ai$ za pozitivne - Število členov za fiksno absolutno napako')
-plt.xlabel('x')
-plt.ylabel('število členov')
-
-plt.yscale('linear')
-
-plt.savefig('01/graphs/pos_abs_err_n_ai.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-# plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Ai')
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski $Bi$ za pozitivne - Število členov za fiksno absolutno napako')
-plt.xlabel('x')
-plt.ylabel('število členov')
-
-plt.yscale('linear')
-
-plt.savefig('01/graphs/pos_abs_err_n_bi.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_rel[len(x_pos)*5//40:len(x_pos)*35//40][:, 3], ls='-', label='Ai')
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_rel[len(x_pos)*5//40:len(x_pos)*35//40][:, 3], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski za pozitivne - Relativna napaka')
-plt.xlabel('x')
-plt.ylabel('rel. napaka')
-
-plt.savefig('01/graphs/pos_rel_err.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_rel[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Ai')
-# plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_rel[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski $Ai$ za pozitivne - Število členov za fiksno relativno napako')
-plt.xlabel('x')
-plt.ylabel('število členov')
-
-plt.savefig('01/graphs/pos_rel_err_n_ai.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-# plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_rel[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Ai')
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_rel[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski $Bi$ za pozitivne - Število členov za fiksno relativno napako')
-plt.xlabel('x')
-plt.ylabel('število členov')
-
-plt.savefig('01/graphs/pos_rel_err_n_Bi.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-#### negative ####
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], yai_neg_abs[len(x_neg)*5//40:len(x_neg)*35//40][:, 0], ls='-', label='Ai')
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], [mp.airyai(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*35//40]], ls='--', label='Ai ref')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski približek $Ai$ za negativne $x$')
-plt.xlabel('x')
-plt.ylabel('y')
-
-plt.savefig('01/graphs/neg_draw_ai.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], ybi_neg_abs[len(x_neg)*5//40:len(x_neg)*35//40][:, 0], ls='-', label='Bi')
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], [mp.airybi(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*35//40]], ls='--', label='Bi ref')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski približek $Bi$ za negativne $x$')
-plt.xlabel('x')
-plt.ylabel('y')
-
-plt.savefig('01/graphs/neg_draw_bi.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], yai_neg_abs[len(x_neg)*5//40:len(x_neg)*35//40][:, 3], ls='-', label='Ai')
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], ybi_neg_abs[len(x_neg)*5//40:len(x_neg)*35//40][:, 3], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski za negativne - Absolutna napaka')
-plt.xlabel('x')
-plt.ylabel('abs. napaka')
-
-plt.yscale('linear')
-
-plt.savefig('01/graphs/neg_abs_err.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], yai_neg_abs[len(x_neg)*5//40:len(x_neg)*35//40][:, 1], ls='-', label='Ai')
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], ybi_neg_abs[len(x_neg)*5//40:len(x_neg)*35//40][:, 1], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski za negativne - Število členov za fiksno absolutno napako')
-plt.xlabel('x')
-plt.ylabel('število členov')
-
-plt.yscale('linear')
-
-plt.savefig('01/graphs/neg_abs_err_n.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], yai_neg_rel[len(x_neg)*5//40:len(x_neg)*35//40][:, 3], ls='-', label='Ai')
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], ybi_neg_rel[len(x_neg)*5//40:len(x_neg)*35//40][:, 3], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski za negativne - Relativna napaka')
-plt.xlabel('x')
-plt.ylabel('rel. napaka')
-
-plt.savefig('01/graphs/neg_rel_err.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], yai_neg_rel[len(x_neg)*5//40:len(x_neg)*35//40][:, 1], ls='-', label='Ai')
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], ybi_neg_rel[len(x_neg)*5//40:len(x_neg)*35//40][:, 1], ls='-', label='Bi')
-
-plt.grid()
-plt.legend(loc='best',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Asimptotski za negativne - Število členov za fiksno relativno napako')
-plt.xlabel('x')
-plt.ylabel('število členov')
-
-plt.savefig('01/graphs/neg_rel_err_n.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-
-
-
-#### zlepek ####
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], yai_neg_abs[len(x_neg)*5//40:len(x_neg)*40//40][:, 2], ls='-', label='Ai - neg')
-plt.plot(x_mac[len(x_mac)*0//40:len(x_mac)*40//40], yai_mac_abs[len(x_mac)*0//40:len(x_mac)*40//40][:, 2], ls='-', label='Ai - mac')
-plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*0//40:len(x_pos)*35//40][:, 2], ls='-', label='Ai - pos')
-
-plt.grid()
-plt.legend(loc='upper left',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Časovna zahtevnost $Ai$ pri fiksni abs napaki')
-plt.xlabel('x')
-plt.ylabel('čas [$s$]')
-
-plt.savefig('01/graphs/cas_ai_abs.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], ybi_neg_abs[len(x_neg)*5//40:len(x_neg)*40//40][:, 2], ls='-', label='Bi - neg')
-plt.plot(x_mac[len(x_mac)*0//40:len(x_mac)*40//40], ybi_mac_abs[len(x_mac)*0//40:len(x_mac)*40//40][:, 2], ls='-', label='Bi - mac')
-plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*0//40:len(x_pos)*35//40][:, 2], ls='-', label='Bi - pos')
-
-plt.grid()
-plt.legend(loc='upper left',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Časovna zahtevnost $Bi$ pri fiksni abs napaki')
-plt.xlabel('x')
-plt.ylabel('čas [$s$]')
-
-plt.savefig('01/graphs/cas_bi_abs.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], yai_neg_rel[len(x_neg)*5//40:len(x_neg)*40//40][:, 2], ls='-', label='Ai - neg')
-plt.plot(x_mac[len(x_mac)*0//40:len(x_mac)*40//40], yai_mac_rel[len(x_mac)*0//40:len(x_mac)*40//40][:, 2], ls='-', label='Ai - mac')
-plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], yai_pos_rel[len(x_pos)*0//40:len(x_pos)*35//40][:, 2], ls='-', label='Ai - pos')
-
-plt.grid()
-plt.legend(loc='upper left',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Časovna zahtevnost $Ai$ pri fiksni rel napaki')
-plt.xlabel('x')
-plt.ylabel('čas [$s$]')
-
-plt.savefig('01/graphs/cas_ai_rel.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], ybi_neg_rel[len(x_neg)*5//40:len(x_neg)*40//40][:, 2], ls='-', label='Bi - neg')
-plt.plot(x_mac[len(x_mac)*0//40:len(x_mac)*40//40], ybi_mac_rel[len(x_mac)*0//40:len(x_mac)*40//40][:, 2], ls='-', label='Bi - mac')
-plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], ybi_pos_rel[len(x_pos)*0//40:len(x_pos)*35//40][:, 2], ls='-', label='Bi - pos')
-
-plt.grid()
-plt.legend(loc='upper left',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Časovna zahtevnost $Bi$ pri fiksni rel napaki')
-plt.xlabel('x')
-plt.ylabel('čas [$s$]')
-
-plt.savefig('01/graphs/cas_bi_rel.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*36//40], yai_neg_abs[len(x_neg)*5//40:len(x_neg)*36//40][:, 0], ls='-', label='asim. neg.')
-plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*25//40], yai_mac_abs[len(x_mac)*11//40:len(x_mac)*25//40][:, 0], ls='-', label='mac.')
-plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*0//40:len(x_pos)*35//40][:, 0], ls='-', label='asim. pos.')
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*36//40], [mp.airyai(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*36//40]], ls='-.')
-plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*25//40], [mp.airyai(x) for x in x_mac[len(x_mac)*11//40:len(x_mac)*25//40]], ls='-.')
-plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], [mp.airyai(x) for x in x_pos[len(x_pos)*0//40:len(x_pos)*35//40]], ls='-.')
-
-plt.grid()
-plt.legend(loc='upper right',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Zlepek $Ai$ s fiksno absolutno napako')
-plt.xlabel('x')
-plt.ylabel('y')
-
-plt.savefig('01/graphs/zlepek_ai_abs.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], yai_neg_rel[len(x_neg)*5//40:len(x_neg)*35//40][:, 0], ls='-', label='asim. neg.')
-plt.plot(x_mac[len(x_mac)*10//40:len(x_mac)*25//40], yai_mac_rel[len(x_mac)*10//40:len(x_mac)*25//40][:, 0], ls='-', label='mac.')
-plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], yai_pos_rel[len(x_pos)*0//40:len(x_pos)*35//40][:, 0], ls='-', label='asim. pos.')
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], [mp.airyai(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*35//40]], ls='-.')
-plt.plot(x_mac[len(x_mac)*10//40:len(x_mac)*25//40], [mp.airyai(x) for x in x_mac[len(x_mac)*10//40:len(x_mac)*25//40]], ls='-.')
-plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], [mp.airyai(x) for x in x_pos[len(x_pos)*0//40:len(x_pos)*35//40]], ls='-.')
-
-plt.grid()
-plt.legend(loc='upper right',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Zlepek $Ai$ s fiksno relativno napako')
-plt.xlabel('x')
-plt.ylabel('y')
-
-plt.savefig('01/graphs/zlepek_ai_rel.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*36//40], ybi_neg_abs[len(x_neg)*5//40:len(x_neg)*36//40][:, 0], ls='-', label='asim. neg.')
-plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*30//40], ybi_mac_abs[len(x_mac)*11//40:len(x_mac)*30//40][:, 0], ls='-', label='mac.')
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 0], ls='-', label='asim. pos.')
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*36//40], [mp.airybi(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*36//40]], ls='-.')
-plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*30//40], [mp.airybi(x) for x in x_mac[len(x_mac)*11//40:len(x_mac)*30//40]], ls='-.')
-plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], [mp.airybi(x) for x in x_pos[len(x_pos)*5//40:len(x_pos)*35//40]], ls='-.')
-
-plt.grid()
-plt.legend(loc='upper left',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Zlepek $Bi$ s fiksno absolutno napako')
-plt.xlabel('x')
-plt.ylabel('y')
-
-plt.yscale('log')
-
-plt.savefig('01/graphs/zlepek_bi_abs.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
-
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*36//40], ybi_neg_rel[len(x_neg)*5//40:len(x_neg)*36//40][:, 0], ls='-', label='asim. neg.')
-plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*27//40], ybi_mac_rel[len(x_mac)*11//40:len(x_mac)*27//40][:, 0], ls='-', label='mac.')
-plt.plot(x_pos[len(x_pos)*2//40:len(x_pos)*35//40], ybi_pos_rel[len(x_pos)*2//40:len(x_pos)*35//40][:, 0], ls='-', label='asim. pos.')
-
-plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*36//40], [mp.airybi(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*36//40]], ls='-.')
-plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*27//40], [mp.airybi(x) for x in x_mac[len(x_mac)*11//40:len(x_mac)*27//40]], ls='-.')
-plt.plot(x_pos[len(x_pos)*2//40:len(x_pos)*35//40], [mp.airybi(x) for x in x_pos[len(x_pos)*2//40:len(x_pos)*35//40]], ls='-.')
-
-plt.grid()
-plt.legend(loc='upper left',
-    frameon=True,        # turn on legend box
-    framealpha=0.9,      # 0 = transparent, 1 = opaque
-    facecolor='white',   # background color
-    edgecolor='gray'     # border color
-)
-plt.title('Zlepek $Bi$ s fiksno relativno napako')
-plt.xlabel('x')
-plt.ylabel('y')
-
-plt.yscale('log')
-
-plt.savefig('01/graphs/zlepek_bi_rel.pdf', dpi=512, bbox_inches='tight')
-plt.clf()
+if __name__ == '__main__':
+
+    x_neg = np.arange(-45, -5, 0.1)
+    x_mac = np.arange(-20, 20, 0.1)
+    x_pos = np.arange(5, 45, 0.1)
+
+    with ProcessPoolExecutor() as executor:
+        futures = [
+            executor.submit(compute_section, x_neg, Ai_neg, Bi_neg, "neg", 0),
+            executor.submit(compute_section, x_mac, Ai_mac, Bi_mac, "mac", 1),
+            executor.submit(compute_section, x_pos, Ai_pos, Bi_pos, "pos", 2),
+        ]
+
+        # Collect results (each future returns a tuple of 4 arrays)
+        (yai_neg_abs, yai_neg_rel, ybi_neg_abs, ybi_neg_rel), \
+        (yai_mac_abs, yai_mac_rel, ybi_mac_abs, ybi_mac_rel), \
+        (yai_pos_abs, yai_pos_rel, ybi_pos_abs, ybi_pos_rel) = [f.result() for f in futures]
+
+    ### zgornji del kode mi je napisal chat-gpt ko sem ga prosil naj paralelizira mojo kodo.
+
+    plt.style.use(['science', 'bright'])
+    # plt.rcParams['axes.prop_cycle'] = cycler(color=['#1f77b4', '#ff7f0e'])
+
+    #### mac ####
+
+    plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], yai_mac_abs[len(x_mac)*15//40:len(x_mac)*21//40][:, 0], ls='-', label='Ai')
+    plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], ybi_mac_abs[len(x_mac)*15//40:len(x_mac)*21//40][:, 0], ls='-', label='Bi')
+    plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], [mp.airyai(x) for x in x_mac[len(x_mac)*15//40:len(x_mac)*21//40]], ls='-.', label='Ai ref')
+    plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], [mp.airybi(x) for x in x_mac[len(x_mac)*15//40:len(x_mac)*21//40]], ls='-.', label='Bi ref')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Maclaurinov približek in referenčne vrednosti')
+    plt.xlabel('x')
+    plt.ylabel('y')
+
+    plt.savefig('01/graphs/mac_draw.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], yai_mac_abs[len(x_mac)*15//40:len(x_mac)*25//40][:, 3], ls='-', label='Ai')
+    plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], ybi_mac_abs[len(x_mac)*15//40:len(x_mac)*25//40][:, 3], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Maclaurin - Absolutna napaka')
+    plt.xlabel('x')
+    plt.ylabel('abs. napaka')
+
+    plt.savefig('01/graphs/mac_abs_err.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], yai_mac_abs[len(x_mac)*15//40:len(x_mac)*25//40][:, 1], ls='-', label='Ai')
+    plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], ybi_mac_abs[len(x_mac)*15//40:len(x_mac)*25//40][:, 1], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Maclaurin - Število členov za fiksno absolutno napako')
+    plt.xlabel('x')
+    plt.ylabel('število členov')
+
+    plt.savefig('01/graphs/mac_abs_err_n.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], yai_mac_rel[len(x_mac)*15//40:len(x_mac)*25//40][:, 3], ls='-', label='Ai')
+    plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], ybi_mac_rel[len(x_mac)*15//40:len(x_mac)*25//40][:, 3], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Maclaurin - relativna napaka')
+    plt.xlabel('x')
+    plt.ylabel('rel. napaka')
+
+    plt.savefig('01/graphs/mac_rel_err.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], yai_mac_rel[len(x_mac)*15//40:len(x_mac)*25//40][:, 1], ls='-', label='Ai')
+    plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*25//40], ybi_mac_rel[len(x_mac)*15//40:len(x_mac)*25//40][:, 1], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Maclaurin - Število členov za fiksno relativno napako')
+    plt.xlabel('x')
+    plt.ylabel('število členov')
+
+    plt.savefig('01/graphs/mac_rel_err_n.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    ### positive ####
+
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 0], ls='-', label='Ai')
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], [mp.airyai(x) for x in x_pos[len(x_pos)*5//40:len(x_pos)*35//40]], ls='--', label='Ai ref')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski približek $Ai$ za pozitivne $x$')
+    plt.xlabel('x')
+    plt.ylabel('y')
+
+    plt.yscale('log')
+
+    plt.savefig('01/graphs/pos_draw_ai.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 0], ls='-', label='Bi')
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], [mp.airybi(x) for x in x_pos[len(x_pos)*5//40:len(x_pos)*35//40]], ls='--', label='Bi ref')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski približek $Bi$ za pozitivne $x$')
+    plt.xlabel('x')
+    plt.ylabel('y')
+
+    plt.yscale('log')
+
+    plt.savefig('01/graphs/pos_draw_bi.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 3], ls='-', label='Ai')
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 3], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski za pozitivne - Absolutna napaka')
+    plt.xlabel('x')
+    plt.ylabel('abs. napaka')
+
+    plt.yscale('linear')
+
+    plt.savefig('01/graphs/pos_abs_err.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Ai')
+    # plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski $Ai$ za pozitivne - Število členov za fiksno absolutno napako')
+    plt.xlabel('x')
+    plt.ylabel('število členov')
+
+    plt.yscale('linear')
+
+    plt.savefig('01/graphs/pos_abs_err_n_ai.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    # plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Ai')
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski $Bi$ za pozitivne - Število členov za fiksno absolutno napako')
+    plt.xlabel('x')
+    plt.ylabel('število členov')
+
+    plt.yscale('linear')
+
+    plt.savefig('01/graphs/pos_abs_err_n_bi.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_rel[len(x_pos)*5//40:len(x_pos)*35//40][:, 3], ls='-', label='Ai')
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_rel[len(x_pos)*5//40:len(x_pos)*35//40][:, 3], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski za pozitivne - Relativna napaka')
+    plt.xlabel('x')
+    plt.ylabel('rel. napaka')
+
+    plt.savefig('01/graphs/pos_rel_err.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_rel[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Ai')
+    # plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_rel[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski $Ai$ za pozitivne - Število členov za fiksno relativno napako')
+    plt.xlabel('x')
+    plt.ylabel('število členov')
+
+    plt.savefig('01/graphs/pos_rel_err_n_ai.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    # plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], yai_pos_rel[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Ai')
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_rel[len(x_pos)*5//40:len(x_pos)*35//40][:, 1], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski $Bi$ za pozitivne - Število členov za fiksno relativno napako')
+    plt.xlabel('x')
+    plt.ylabel('število členov')
+
+    plt.savefig('01/graphs/pos_rel_err_n_Bi.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    #### negative ####
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], yai_neg_abs[len(x_neg)*5//40:len(x_neg)*35//40][:, 0], ls='-', label='Ai')
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], [mp.airyai(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*35//40]], ls='--', label='Ai ref')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski približek $Ai$ za negativne $x$')
+    plt.xlabel('x')
+    plt.ylabel('y')
+
+    plt.savefig('01/graphs/neg_draw_ai.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], ybi_neg_abs[len(x_neg)*5//40:len(x_neg)*35//40][:, 0], ls='-', label='Bi')
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], [mp.airybi(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*35//40]], ls='--', label='Bi ref')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski približek $Bi$ za negativne $x$')
+    plt.xlabel('x')
+    plt.ylabel('y')
+
+    plt.savefig('01/graphs/neg_draw_bi.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], yai_neg_abs[len(x_neg)*5//40:len(x_neg)*35//40][:, 3], ls='-', label='Ai')
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], ybi_neg_abs[len(x_neg)*5//40:len(x_neg)*35//40][:, 3], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski za negativne - Absolutna napaka')
+    plt.xlabel('x')
+    plt.ylabel('abs. napaka')
+
+    plt.yscale('linear')
+
+    plt.savefig('01/graphs/neg_abs_err.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], yai_neg_abs[len(x_neg)*5//40:len(x_neg)*35//40][:, 1], ls='-', label='Ai')
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], ybi_neg_abs[len(x_neg)*5//40:len(x_neg)*35//40][:, 1], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski za negativne - Število členov za fiksno absolutno napako')
+    plt.xlabel('x')
+    plt.ylabel('število členov')
+
+    plt.yscale('linear')
+
+    plt.savefig('01/graphs/neg_abs_err_n.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], yai_neg_rel[len(x_neg)*5//40:len(x_neg)*35//40][:, 3], ls='-', label='Ai')
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], ybi_neg_rel[len(x_neg)*5//40:len(x_neg)*35//40][:, 3], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski za negativne - Relativna napaka')
+    plt.xlabel('x')
+    plt.ylabel('rel. napaka')
+
+    plt.savefig('01/graphs/neg_rel_err.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], yai_neg_rel[len(x_neg)*5//40:len(x_neg)*35//40][:, 1], ls='-', label='Ai')
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], ybi_neg_rel[len(x_neg)*5//40:len(x_neg)*35//40][:, 1], ls='-', label='Bi')
+
+    plt.grid()
+    plt.legend(loc='best',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Asimptotski za negativne - Število členov za fiksno relativno napako')
+    plt.xlabel('x')
+    plt.ylabel('število členov')
+
+    plt.savefig('01/graphs/neg_rel_err_n.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+
+
+
+    #### zlepek ####
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], yai_neg_abs[len(x_neg)*5//40:len(x_neg)*40//40][:, 2], ls='-', label='Ai - neg')
+    plt.plot(x_mac[len(x_mac)*0//40:len(x_mac)*40//40], yai_mac_abs[len(x_mac)*0//40:len(x_mac)*40//40][:, 2], ls='-', label='Ai - mac')
+    plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*0//40:len(x_pos)*35//40][:, 2], ls='-', label='Ai - pos')
+
+    plt.grid()
+    plt.legend(loc='upper left',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Časovna zahtevnost $Ai$ pri fiksni abs napaki')
+    plt.xlabel('x')
+    plt.ylabel('čas [$s$]')
+
+    plt.savefig('01/graphs/cas_ai_abs.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], ybi_neg_abs[len(x_neg)*5//40:len(x_neg)*40//40][:, 2], ls='-', label='Bi - neg')
+    plt.plot(x_mac[len(x_mac)*0//40:len(x_mac)*40//40], ybi_mac_abs[len(x_mac)*0//40:len(x_mac)*40//40][:, 2], ls='-', label='Bi - mac')
+    plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*0//40:len(x_pos)*35//40][:, 2], ls='-', label='Bi - pos')
+
+    plt.grid()
+    plt.legend(loc='upper left',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Časovna zahtevnost $Bi$ pri fiksni abs napaki')
+    plt.xlabel('x')
+    plt.ylabel('čas [$s$]')
+
+    plt.savefig('01/graphs/cas_bi_abs.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], yai_neg_rel[len(x_neg)*5//40:len(x_neg)*40//40][:, 2], ls='-', label='Ai - neg')
+    plt.plot(x_mac[len(x_mac)*0//40:len(x_mac)*40//40], yai_mac_rel[len(x_mac)*0//40:len(x_mac)*40//40][:, 2], ls='-', label='Ai - mac')
+    plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], yai_pos_rel[len(x_pos)*0//40:len(x_pos)*35//40][:, 2], ls='-', label='Ai - pos')
+
+    plt.grid()
+    plt.legend(loc='upper left',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Časovna zahtevnost $Ai$ pri fiksni rel napaki')
+    plt.xlabel('x')
+    plt.ylabel('čas [$s$]')
+
+    plt.savefig('01/graphs/cas_ai_rel.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], ybi_neg_rel[len(x_neg)*5//40:len(x_neg)*40//40][:, 2], ls='-', label='Bi - neg')
+    plt.plot(x_mac[len(x_mac)*0//40:len(x_mac)*40//40], ybi_mac_rel[len(x_mac)*0//40:len(x_mac)*40//40][:, 2], ls='-', label='Bi - mac')
+    plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], ybi_pos_rel[len(x_pos)*0//40:len(x_pos)*35//40][:, 2], ls='-', label='Bi - pos')
+
+    plt.grid()
+    plt.legend(loc='upper left',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Časovna zahtevnost $Bi$ pri fiksni rel napaki')
+    plt.xlabel('x')
+    plt.ylabel('čas [$s$]')
+
+    plt.savefig('01/graphs/cas_bi_rel.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], yai_neg_abs[len(x_neg)*5//40:len(x_neg)*40//40][:, 0], ls='-', label='asim. neg.')
+    plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*25//40], yai_mac_abs[len(x_mac)*11//40:len(x_mac)*25//40][:, 0], ls='-', label='mac.')
+    plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*0//40:len(x_pos)*35//40][:, 0], ls='-', label='asim. pos.')
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], [mp.airyai(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*40//40]], ls='-.')
+    plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*25//40], [mp.airyai(x) for x in x_mac[len(x_mac)*11//40:len(x_mac)*25//40]], ls='-.')
+    plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], [mp.airyai(x) for x in x_pos[len(x_pos)*0//40:len(x_pos)*35//40]], ls='-.')
+
+    plt.grid()
+    plt.legend(loc='upper right',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Zlepek $Ai$ s fiksno absolutno napako')
+    plt.xlabel('x')
+    plt.ylabel('y')
+
+    plt.savefig('01/graphs/zlepek_ai_abs.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], yai_neg_rel[len(x_neg)*5//40:len(x_neg)*40//40][:, 0], ls='-', label='asim. neg.')
+    plt.plot(x_mac[len(x_mac)*10//40:len(x_mac)*25//40], yai_mac_rel[len(x_mac)*10//40:len(x_mac)*25//40][:, 0], ls='-', label='mac.')
+    plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], yai_pos_rel[len(x_pos)*0//40:len(x_pos)*35//40][:, 0], ls='-', label='asim. pos.')
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], [mp.airyai(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*40//40]], ls='-.')
+    plt.plot(x_mac[len(x_mac)*10//40:len(x_mac)*25//40], [mp.airyai(x) for x in x_mac[len(x_mac)*10//40:len(x_mac)*25//40]], ls='-.')
+    plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], [mp.airyai(x) for x in x_pos[len(x_pos)*0//40:len(x_pos)*35//40]], ls='-.')
+
+    plt.grid()
+    plt.legend(loc='upper right',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Zlepek $Ai$ s fiksno relativno napako')
+    plt.xlabel('x')
+    plt.ylabel('y')
+
+    plt.savefig('01/graphs/zlepek_ai_rel.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], ybi_neg_abs[len(x_neg)*5//40:len(x_neg)*40//40][:, 0], ls='-', label='asim. neg.')
+    plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*30//40], ybi_mac_abs[len(x_mac)*11//40:len(x_mac)*30//40][:, 0], ls='-', label='mac.')
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 0], ls='-', label='asim. pos.')
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], [mp.airybi(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*40//40]], ls='-.')
+    plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*30//40], [mp.airybi(x) for x in x_mac[len(x_mac)*11//40:len(x_mac)*30//40]], ls='-.')
+    plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], [mp.airybi(x) for x in x_pos[len(x_pos)*5//40:len(x_pos)*35//40]], ls='-.')
+
+    plt.grid()
+    plt.legend(loc='upper left',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Zlepek $Bi$ s fiksno absolutno napako')
+    plt.xlabel('x')
+    plt.ylabel('y')
+
+    plt.yscale('log')
+
+    plt.savefig('01/graphs/zlepek_bi_abs.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
+
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], ybi_neg_rel[len(x_neg)*5//40:len(x_neg)*40//40][:, 0], ls='-', label='asim. neg.')
+    plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*27//40], ybi_mac_rel[len(x_mac)*11//40:len(x_mac)*27//40][:, 0], ls='-', label='mac.')
+    plt.plot(x_pos[len(x_pos)*2//40:len(x_pos)*35//40], ybi_pos_rel[len(x_pos)*2//40:len(x_pos)*35//40][:, 0], ls='-', label='asim. pos.')
+
+    plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*40//40], [mp.airybi(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*40//40]], ls='-.')
+    plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*27//40], [mp.airybi(x) for x in x_mac[len(x_mac)*11//40:len(x_mac)*27//40]], ls='-.')
+    plt.plot(x_pos[len(x_pos)*2//40:len(x_pos)*35//40], [mp.airybi(x) for x in x_pos[len(x_pos)*2//40:len(x_pos)*35//40]], ls='-.')
+
+    plt.grid()
+    plt.legend(loc='upper left',
+        frameon=True,        # turn on legend box
+        framealpha=0.9,      # 0 = transparent, 1 = opaque
+        facecolor='white',   # background color
+        edgecolor='gray'     # border color
+    )
+    plt.title('Zlepek $Bi$ s fiksno relativno napako')
+    plt.xlabel('x')
+    plt.ylabel('y')
+
+    plt.yscale('log')
+
+    plt.savefig('01/graphs/zlepek_bi_rel.pdf', dpi=512, bbox_inches='tight')
+    plt.clf()
