@@ -7,6 +7,7 @@ import time
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
 import scienceplots
+from cycler import cycler
 
 
 ########### constants and presets ###########
@@ -183,13 +184,14 @@ with ProcessPoolExecutor() as executor:
 
 ### zgornji del kode mi je napisal chat-gpt ko sem ga prosil naj paralelizira mojo kodo.
 
-plt.style.use('science')
+plt.style.use(['science', 'bright'])
+# plt.rcParams['axes.prop_cycle'] = cycler(color=['#1f77b4', '#ff7f0e'])
 
 #### mac ####
 
 plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], yai_mac_abs[len(x_mac)*15//40:len(x_mac)*21//40][:, 0], ls='-', label='Ai')
-plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], [mp.airyai(x) for x in x_mac[len(x_mac)*15//40:len(x_mac)*21//40]], ls='--', label='Ai ref')
 plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], ybi_mac_abs[len(x_mac)*15//40:len(x_mac)*21//40][:, 0], ls='-', label='Bi')
+plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], [mp.airyai(x) for x in x_mac[len(x_mac)*15//40:len(x_mac)*21//40]], ls='--', label='Ai ref')
 plt.plot(x_mac[len(x_mac)*15//40:len(x_mac)*21//40], [mp.airybi(x) for x in x_mac[len(x_mac)*15//40:len(x_mac)*21//40]], ls='--', label='Bi ref')
 
 plt.grid()
@@ -627,4 +629,100 @@ plt.xlabel('x')
 plt.ylabel('čas [$s$]')
 
 plt.savefig('01/graphs/cas_bi_rel.pdf', dpi=512, bbox_inches='tight')
+plt.clf()
+
+
+plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*36//40], yai_neg_abs[len(x_neg)*5//40:len(x_neg)*36//40][:, 0], ls='-', label='asim. neg.')
+plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*25//40], yai_mac_abs[len(x_mac)*11//40:len(x_mac)*25//40][:, 0], ls='-', label='mac.')
+plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], yai_pos_abs[len(x_pos)*0//40:len(x_pos)*35//40][:, 0], ls='-', label='asim. pos.')
+
+plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*36//40], [mp.airyai(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*36//40]], ls='-.')
+plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*25//40], [mp.airyai(x) for x in x_mac[len(x_mac)*11//40:len(x_mac)*25//40]], ls='-.')
+plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], [mp.airyai(x) for x in x_pos[len(x_pos)*0//40:len(x_pos)*35//40]], ls='-.')
+
+plt.grid()
+plt.legend(loc='upper right',
+    frameon=True,        # turn on legend box
+    framealpha=0.9,      # 0 = transparent, 1 = opaque
+    facecolor='white',   # background color
+    edgecolor='gray'     # border color
+)
+plt.title('Zlepek $Ai$ s fiksno absolutno napako')
+plt.xlabel('x')
+plt.ylabel('y')
+
+plt.savefig('01/graphs/zlepek_ai_abs.pdf', dpi=512, bbox_inches='tight')
+plt.clf()
+
+
+plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], yai_neg_rel[len(x_neg)*5//40:len(x_neg)*35//40][:, 0], ls='-', label='asim. neg.')
+plt.plot(x_mac[len(x_mac)*10//40:len(x_mac)*25//40], yai_mac_rel[len(x_mac)*10//40:len(x_mac)*25//40][:, 0], ls='-', label='mac.')
+plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], yai_pos_rel[len(x_pos)*0//40:len(x_pos)*35//40][:, 0], ls='-', label='asim. pos.')
+
+plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*35//40], [mp.airyai(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*35//40]], ls='-.')
+plt.plot(x_mac[len(x_mac)*10//40:len(x_mac)*25//40], [mp.airyai(x) for x in x_mac[len(x_mac)*10//40:len(x_mac)*25//40]], ls='-.')
+plt.plot(x_pos[len(x_pos)*0//40:len(x_pos)*35//40], [mp.airyai(x) for x in x_pos[len(x_pos)*0//40:len(x_pos)*35//40]], ls='-.')
+
+plt.grid()
+plt.legend(loc='upper right',
+    frameon=True,        # turn on legend box
+    framealpha=0.9,      # 0 = transparent, 1 = opaque
+    facecolor='white',   # background color
+    edgecolor='gray'     # border color
+)
+plt.title('Zlepek $Ai$ s fiksno relativno napako')
+plt.xlabel('x')
+plt.ylabel('y')
+
+plt.savefig('01/graphs/zlepek_ai_rel.pdf', dpi=512, bbox_inches='tight')
+plt.clf()
+
+
+plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*36//40], ybi_neg_abs[len(x_neg)*5//40:len(x_neg)*36//40][:, 0], ls='-', label='asim. neg.')
+plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*30//40], ybi_mac_abs[len(x_mac)*11//40:len(x_mac)*30//40][:, 0], ls='-', label='mac.')
+plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], ybi_pos_abs[len(x_pos)*5//40:len(x_pos)*35//40][:, 0], ls='-', label='asim. pos.')
+
+plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*36//40], [mp.airybi(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*36//40]], ls='-.')
+plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*30//40], [mp.airybi(x) for x in x_mac[len(x_mac)*11//40:len(x_mac)*30//40]], ls='-.')
+plt.plot(x_pos[len(x_pos)*5//40:len(x_pos)*35//40], [mp.airybi(x) for x in x_pos[len(x_pos)*5//40:len(x_pos)*35//40]], ls='-.')
+
+plt.grid()
+plt.legend(loc='upper left',
+    frameon=True,        # turn on legend box
+    framealpha=0.9,      # 0 = transparent, 1 = opaque
+    facecolor='white',   # background color
+    edgecolor='gray'     # border color
+)
+plt.title('Zlepek $Bi$ s fiksno absolutno napako')
+plt.xlabel('x')
+plt.ylabel('y')
+
+plt.yscale('log')
+
+plt.savefig('01/graphs/zlepek_bi_abs.pdf', dpi=512, bbox_inches='tight')
+plt.clf()
+
+
+plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*36//40], ybi_neg_rel[len(x_neg)*5//40:len(x_neg)*36//40][:, 0], ls='-', label='asim. neg.')
+plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*27//40], ybi_mac_rel[len(x_mac)*11//40:len(x_mac)*27//40][:, 0], ls='-', label='mac.')
+plt.plot(x_pos[len(x_pos)*2//40:len(x_pos)*35//40], ybi_pos_rel[len(x_pos)*2//40:len(x_pos)*35//40][:, 0], ls='-', label='asim. pos.')
+
+plt.plot(x_neg[len(x_neg)*5//40:len(x_neg)*36//40], [mp.airybi(x) for x in x_neg[len(x_neg)*5//40:len(x_neg)*36//40]], ls='-.')
+plt.plot(x_mac[len(x_mac)*11//40:len(x_mac)*27//40], [mp.airybi(x) for x in x_mac[len(x_mac)*11//40:len(x_mac)*27//40]], ls='-.')
+plt.plot(x_pos[len(x_pos)*2//40:len(x_pos)*35//40], [mp.airybi(x) for x in x_pos[len(x_pos)*2//40:len(x_pos)*35//40]], ls='-.')
+
+plt.grid()
+plt.legend(loc='upper left',
+    frameon=True,        # turn on legend box
+    framealpha=0.9,      # 0 = transparent, 1 = opaque
+    facecolor='white',   # background color
+    edgecolor='gray'     # border color
+)
+plt.title('Zlepek $Bi$ s fiksno relativno napako')
+plt.xlabel('x')
+plt.ylabel('y')
+
+plt.yscale('log')
+
+plt.savefig('01/graphs/zlepek_bi_rel.pdf', dpi=512, bbox_inches='tight')
 plt.clf()
