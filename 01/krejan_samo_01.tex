@@ -15,6 +15,8 @@
 \usepackage[slovene]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{siunitx}
+\usepackage{subcaption}
+\usepackage{float}
 
 \def\phi{\varphi}
 \def\eps{\varepsilon}
@@ -85,6 +87,7 @@
 \vspace{-1cm}
 
 \section{Uvod}
+\label{uvod}
 
 Airyjevi funkciji $\Ai$ in $\Bi$ % #TODO: add figure
 se v fiziki pojavljata predvsem v optiki in kvantni mehaniki
@@ -194,7 +197,7 @@ Dobljene rezultate bomo skozi nalogo primerjali z vgrajenima funkcijama $mpmath.
 \end{center}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \begin{minipage}{0.42\textwidth}
     \centering
@@ -208,12 +211,12 @@ Dobljene rezultate bomo skozi nalogo primerjali z vgrajenima funkcijama $mpmath.
     % \caption{Second plot.}
     % \label{fig:plot2}
   \end{minipage}
-  \caption{Absolutna napaka naše implementacije in število členov potrebnih, da le ta ostane pod $10^{10}$. Iz grafov vidimo, da se napaka sicer z oddaljenostjo od izhodišča strmo veča, a vsakič ko bi le ta zgrešila željeno natančnost se vrsti doda en člen. To pojasni močno zobničasto naravo napake.}
+  \caption{Absolutna napaka naše implementacije in število členov potrebnih, da le ta ostane pod $10^{-10}$. Iz grafov vidimo, da se napaka sicer z oddaljenostjo od izhodišča strmo veča, a vsakič ko bi le ta zgrešila željeno natančnost se vrsti doda en člen. To pojasni močno zobničasto naravo napake.}
   \label{fig: mac_abs_err}
 \end{figure}
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centering
   \begin{minipage}{0.42\textwidth}
     \centering
@@ -240,8 +243,160 @@ Zanimivost, ki se mi jo zdi vredno omeniti lahko opazimo na desni sliki \ref{fig
 
 \subsection{Asimptotski približek za velike negativne $x$}
 
+Člene vrst razvoja funcij $P$ in $Q$ prav tako, kot pri Maclaurinovem razvoju zapišemo rekurzivno, saj tako močno izboljšamo hitrost algoritma.
+
+\begin{equation*}
+  p_n = p_{n-1} \cdot \frac{p_n}{p_{n-1}} = - p_{n-1} \cdot \frac{(6n - 1/2)(6n - 5/2)(6n - 7/2)(6n - 11/2)}{(2n - 1)(2n)18^2x^2} \>, \qquad p_0 = 1
+\end{equation*}
+
+\begin{equation*}
+  q_n = q_{n-1} \cdot \frac{q_n}{q_{n-1}} = - q_{n-1} \cdot \frac{(6n - 1/2)(6n - 5/2)(6n + 1/2)(6n + 5/2)}{(2n + 1)(2n)18^2x^2} \>, \qquad q_0 = \frac{5}{72x}
+\end{equation*}
+
+Pri obeh asimptotskih priblizkih moramo sicer paziti, da ne uporabimo preveč členov v vrsti. Izkaže se namreč, da se začne napaka pri nekem členu nazaj večati. Iz tega razloga vrsto odrežemo, ko naslednji člen postane večji od prejšnjega. Poraja se vprašanje, če je to res najboljša meja za \textit{odsek} vrste: 
+\begin{quote}
+  Odgovor je da je to tok blizu, da je praktično optimalno. (Jakob Kralj, 2025)
+\end{quote}
+\newpage
+
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/neg_draw_ai.pdf}
+    % \caption{First plot.}
+    % \label{fig:plot1}
+  \end{minipage}\hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/neg_draw_bi.pdf}
+    % \caption{Second plot.}
+    % \label{fig:plot2}
+  \end{minipage}
+  \caption{Asimptotski približek za $Ai$ (levo) in $Bi$ (desno) primerjan z vgrajenima funkcijama.}
+  \label{fig: neg_draw}
+\end{figure}
+
+
+\begin{figure}[h]%#TODO fig size
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/neg_abs_err.pdf}
+    % \caption{First plot.}
+    % \label{fig:plot1}
+  \end{minipage}\hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/neg_abs_err_n.pdf}
+    % \caption{Second plot.}
+    % \label{fig:plot2}
+  \end{minipage}
+  \caption{Absolutna napaka (levo) in število členov asimptotske vrste potrebnih za doseg le te. Zanimivo vidimo, da bolj kot je negativen $x$ manj manjša je napaka in je zato posledično potrebnih manj členov.}
+  \label{fig: neg_abs}
+\end{figure}
+
+
+\begin{figure}[H]%#TODO fig size
+  \centering
+  \begin{minipage}{0.42\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/neg_rel_err.pdf}
+    % \caption{First plot.}
+    % \label{fig:plot1}
+  \end{minipage}\hfill
+  \begin{minipage}{0.55\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/neg_rel_err_n.pdf}
+    % \caption{Second plot.}
+    % \label{fig:plot2}
+  \end{minipage}
+  \caption{Relativna napaka (levo) in število členov potrebnih za doseg le te (desno). Sama karakteristika je seveda zelo podobna kot pri absolutni napaki (glej sliko \ref{fig: neg_abs}) a lahko opazimo, da je v splošnem za konstantno relativno napako potrebnih nekoliko več členov}
+  \label{fig: neg_rel}
+\end{figure}
+
+
+
+
+\newpage
 \subsection{Asimptotski približek za velike pozitivne $x$}
 
+
+Za velike pozitivne $x$ uporabimo vrsto $L$ opisano v poglavju \ref{uvod}. Katere člene lahko spet zapišemo rekurzivno za potrebe optimizacije:
+
+\begin{equation*}
+  l_n = l_{n-1} \cdot \frac{l_n}{l_{n-1}} = l_{n-1} \cdot \frac{(3n + 1/2)(3n + 5/2)}{(n + 1)18x} \>, \qquad l_0 = 1
+\end{equation*}
+
+Pristop od tu naprej je seveda ekvivalenten tistemu za velike negativne $x$.
+
+\begin{figure}[h]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/pos_draw_ai.pdf}
+    % \caption{First plot.}
+    % \label{fig:plot1}
+  \end{minipage}\hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/pos_draw_bi.pdf}
+    % \caption{Second plot.}
+    % \label{fig:plot2}
+  \end{minipage}
+  \caption{Asimptotski približek za $Ai$ (levo) in $Bi$ (desno) primerjan z vgrajenima funkcijama.}
+  \label{fig: pos_draw}
+\end{figure}
+
+
+\begin{figure}[H]
+  \centering
+
+  % Row 1
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/pos_abs_err.pdf}
+    \caption{First subfigure.}
+    \label{fig:a}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/pos_rel_err.pdf}
+    \caption{Second subfigure.}
+    \label{fig:b}
+  \end{subfigure}
+
+  % Row 2
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/pos_abs_err_n_ai.pdf}
+    \caption{Third subfigure.}
+    \label{fig:c}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/pos_rel_err_n_ai.pdf}
+    \caption{Fourth subfigure.}
+    \label{fig:d}
+  \end{subfigure}
+
+  % Row 3
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/pos_abs_err_n_bi.pdf}
+    \caption{Third subfigure.}
+    % \label{fig:c}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/pos_rel_err_n_Bi.pdf}
+    \caption{Fourth subfigure.}
+    % \label{fig:d}
+  \end{subfigure}
+
+  \caption{Overview of all four cases: (a)–(d).}
+  \label{fig:fourplots}
+\end{figure}
 
 
 \section{Dodatna naloga}
