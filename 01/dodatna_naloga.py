@@ -75,3 +75,8 @@ if __name__ == '__main__':
     print(mp.nstr(bi_zeros[:10], 6))
     print(mp.nstr(bi_zeros_ref[:10], 6))
 
+    print('-----------------')
+
+    print(mp.nstr((ai_zeros - ai_zeros_ref), 15))
+    print(mp.nstr((bi_zeros - bi_zeros_ref), 15))
+

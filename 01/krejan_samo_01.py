@@ -7,6 +7,7 @@ import time
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
 import scienceplots
+import timeit
 
 
 ########### constants and presets ###########
@@ -123,10 +124,11 @@ def absolute(x, func, ref, abs_err, max=500):
         if err < abs_err:
             break
         n += 1
-    start = time.process_time()
-    f = func(x, i)
-    end = time.process_time()
-    timer = end - start
+    # start = time.process_time()
+    # f = func(x, i)
+    # end = time.process_time()
+    # timer = end - start
+    timer = timeit.timeit(lambda: func(x, i), number=100)
     return (f[0], f[1], timer, err)
 
 
@@ -142,10 +144,11 @@ def relative(x, func, ref, rel_err, max=500):
         if err < rel_err:
             break
         n += 1
-    start = time.process_time()
-    f = func(x, i)
-    end = time.process_time()
-    timer = end - start
+    # start = time.process_time()
+    # f = func(x, i)
+    # end = time.process_time()
+    # timer = end - start
+    timer = timeit.timeit(lambda: func(x, i), number=100)
     return (f[0], f[1], timer, err)
 
 
@@ -238,7 +241,7 @@ if __name__ == '__main__':
         facecolor='white',   # background color
         edgecolor='gray'     # border color
     )
-    plt.title('Maclaurin - Število členov za fiksno absolutno napako')
+    plt.title('Maclaurin - Število členov \n za fiksno absolutno napako')
     plt.xlabel('x')
     plt.ylabel('število členov')
 
@@ -274,7 +277,7 @@ if __name__ == '__main__':
         facecolor='white',   # background color
         edgecolor='gray'     # border color
     )
-    plt.title('Maclaurin - Število členov za fiksno relativno napako')
+    plt.title('Maclaurin - Število členov\n za fiksno relativno napako')
     plt.xlabel('x')
     plt.ylabel('število členov')
 
@@ -354,7 +357,7 @@ if __name__ == '__main__':
         facecolor='white',   # background color
         edgecolor='gray'     # border color
     )
-    plt.title('Asimptotski $Ai$ za pozitivne - Število členov za fiksno absolutno napako')
+    plt.title('Asimptotski $Ai$ za pozitivne - Število \nčlenov za fiksno absolutno napako')
     plt.xlabel('x')
     plt.ylabel('število členov')
 
@@ -374,7 +377,7 @@ if __name__ == '__main__':
         facecolor='white',   # background color
         edgecolor='gray'     # border color
     )
-    plt.title('Asimptotski $Bi$ za pozitivne - Število členov za fiksno absolutno napako')
+    plt.title('Asimptotski $Bi$ za pozitivne - Število \nčlenov za fiksno absolutno napako')
     plt.xlabel('x')
     plt.ylabel('število členov')
 
@@ -412,7 +415,7 @@ if __name__ == '__main__':
         facecolor='white',   # background color
         edgecolor='gray'     # border color
     )
-    plt.title('Asimptotski $Ai$ za pozitivne - Število členov za fiksno relativno napako')
+    plt.title('Asimptotski $Ai$ za pozitivne - Število \nčlenov za fiksno relativno napako')
     plt.xlabel('x')
     plt.ylabel('število členov')
 
@@ -430,7 +433,7 @@ if __name__ == '__main__':
         facecolor='white',   # background color
         edgecolor='gray'     # border color
     )
-    plt.title('Asimptotski $Bi$ za pozitivne - Število členov za fiksno relativno napako')
+    plt.title('Asimptotski $Bi$ za pozitivne - Število \nčlenov za fiksno relativno napako')
     plt.xlabel('x')
     plt.ylabel('število členov')
 
@@ -506,7 +509,7 @@ if __name__ == '__main__':
         facecolor='white',   # background color
         edgecolor='gray'     # border color
     )
-    plt.title('Asimptotski za negativne - Število členov za fiksno absolutno napako')
+    plt.title('Asimptotski za negativne - Število \nčlenov za fiksno absolutno napako')
     plt.xlabel('x')
     plt.ylabel('število členov')
 
@@ -544,7 +547,7 @@ if __name__ == '__main__':
         facecolor='white',   # background color
         edgecolor='gray'     # border color
     )
-    plt.title('Asimptotski za negativne - Število členov za fiksno relativno napako')
+    plt.title('Asimptotski za negativne - Število \nčlenov za fiksno relativno napako')
     plt.xlabel('x')
     plt.ylabel('število členov')
 

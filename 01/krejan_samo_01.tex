@@ -199,7 +199,7 @@ Dobljene rezultate bomo skozi nalogo primerjali z vgrajenima funkcijama $mpmath.
 
 \begin{figure}[ht]
   \centering
-  \begin{minipage}{0.42\textwidth}
+  \begin{minipage}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{graphs/mac_abs_err.pdf}
     % \caption{First plot.}
@@ -216,9 +216,9 @@ Dobljene rezultate bomo skozi nalogo primerjali z vgrajenima funkcijama $mpmath.
 \end{figure}
 
 
-\begin{figure}[ht]
+\begin{figure}[h!]
   \centering
-  \begin{minipage}{0.42\textwidth}
+  \begin{minipage}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{graphs/mac_rel_err.pdf}
     % \caption{First plot.}
@@ -257,9 +257,9 @@ Pri obeh asimptotskih priblizkih moramo sicer paziti, da ne uporabimo preveč č
 \begin{quote}
   Odgovor je da je to tok blizu, da je praktično optimalno. (Jakob Kralj, 2025)
 \end{quote}
-\newpage
 
-\begin{figure}[h]
+
+\begin{figure}[h!]
   \centering
   \begin{minipage}{0.48\textwidth}
     \centering
@@ -299,13 +299,13 @@ Pri obeh asimptotskih priblizkih moramo sicer paziti, da ne uporabimo preveč č
 
 \begin{figure}[H]%#TODO fig size
   \centering
-  \begin{minipage}{0.42\textwidth}
+  \begin{minipage}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{graphs/neg_rel_err.pdf}
     % \caption{First plot.}
     % \label{fig:plot1}
   \end{minipage}\hfill
-  \begin{minipage}{0.55\textwidth}
+  \begin{minipage}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{graphs/neg_rel_err_n.pdf}
     % \caption{Second plot.}
@@ -316,9 +316,6 @@ Pri obeh asimptotskih priblizkih moramo sicer paziti, da ne uporabimo preveč č
 \end{figure}
 
 
-
-
-\newpage
 \subsection{Asimptotski približek za velike pozitivne $x$}
 
 
@@ -344,7 +341,7 @@ Pristop od tu naprej je seveda ekvivalenten tistemu za velike negativne $x$.
     % \caption{Second plot.}
     % \label{fig:plot2}
   \end{minipage}
-  \caption{Asimptotski približek za $Ai$ (levo) in $Bi$ (desno) primerjan z vgrajenima funkcijama.}
+  \caption{Asimptotski približek za $Ai$ (levo) in $Bi$ (desno) primerjan z vgrajenima funkcijama v logoritemski skali.}
   \label{fig: pos_draw}
 \end{figure}
 
@@ -356,53 +353,134 @@ Pristop od tu naprej je seveda ekvivalenten tistemu za velike negativne $x$.
   \begin{subfigure}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{graphs/pos_abs_err.pdf}
-    \caption{First subfigure.}
+    \caption{Absolutna napaka asimptotske vrste za pozitivne $x$, napaka za $Ai$ je praktično $0$ saj je tudi sama vrednost funkcije zelo blizu ničle.}
     \label{fig:a}
   \end{subfigure}\hfill
   \begin{subfigure}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{graphs/pos_rel_err.pdf}
-    \caption{Second subfigure.}
+    \caption{Relativna napaka asimptotske vrste za pozitivne $x$. Opazimo, da sta napaki nadvse podobni, kar je smiselno glede na naravo razvoja funkcij.}
     \label{fig:b}
   \end{subfigure}
+  \caption{Primerjava absolutne in relativne napake}
+  \label{fig: 1}
+\end{figure}
 
+
+\begin{figure}[ht]
   % Row 2
   \begin{subfigure}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{graphs/pos_abs_err_n_ai.pdf}
-    \caption{Third subfigure.}
+    \caption{Število členov potrebnih za fiksno absolutno napako. Ta ostane $1$ saj se vrednost funkcije praktično ne spreminja, ko pride tako blizu ničle.}
     \label{fig:c}
   \end{subfigure}\hfill
   \begin{subfigure}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{graphs/pos_rel_err_n_ai.pdf}
-    \caption{Fourth subfigure.}
+    \caption{Število členov potrebnih za fiksno relativno napako. Vidimo, da se le ta manjša.}
     \label{fig:d}
   \end{subfigure}
+  \caption{Število členov za fiksno absolutno (levo) in relativno (desno) napako za $Ai$}
+\end{figure}
 
+\begin{figure}[ht]
   % Row 3
   \begin{subfigure}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{graphs/pos_abs_err_n_bi.pdf}
-    \caption{Third subfigure.}
+    \caption{Število členov potrebnih za fiksno absolutno napako. Ta z večanjem $x$ hitro raste.}
     % \label{fig:c}
   \end{subfigure}\hfill
   \begin{subfigure}{0.48\textwidth}
     \centering
     \includegraphics[width=\linewidth]{graphs/pos_rel_err_n_Bi.pdf}
-    \caption{Fourth subfigure.}
+    \caption{Število členov potrebnih za fiksno relativno napako. Karakteristika je podobna tisti pri \ref{fig:d}}
     % \label{fig:d}
   \end{subfigure}
 
-  \caption{Overview of all four cases: (a)–(d).}
+  \caption{Število členov za fiksno absolutno (levo) in relativno (desno) napako za $Bi$}
   \label{fig:fourplots}
 \end{figure}
 
+Vidimo, da se asimptotski razvoj za pozitivne $x$ obnaša zelo podobno, ko zahtevamo konstantno relativno napako, čeprav se funkciji močno razlikujeta - $Ai$ eksponentno pada, medtem ko $Bi$ eksponentno narašča (vidno na sliki: \ref{fig: pos_draw}). Razlika med funkcijama se zares izrazi šele ko fiksiramo absolutno napako. Očitno enaka relativna napaka pomeni mnogo večjo absolutno napako pri $Bi$ in skoraj nično napako pri $Ai$. Posledično za enako absolutno napako seveda potrebujemo mnogo več delcev.
 
+\newpage
 \subsection{Zlepek}
 
-Hitro postane očitno, da nobena izmed metod ni učinkovita po celotni realni osi.
+Hitro postane očitno, da nobena izmed metod ni učinkovita po celotni realni osi. Maclaurinov približek deluje le za relativno majhne $x$ po absolutni vrednosti, saj za večje potrebujemo mnogo členov, kar pa vzame veliko časa. Tu v pomoč prideta asimptotska razvoja posebaj za velike negativne $x$ in velike pozitivne $x$. Torej kar preostane ugotoviti je na katerih točkah bomo nehali upoštevati Maclaurinov razvoj in začeli uporabljati asimptotski razvoj. Za potrebe iskanja teh točk grafiramo čas porabljen za izračun funkcij z različnimi metodami preko realne osi z različnimi zahtevami za napako (sliki \ref{cas ai} in \ref{cas bi}). 
 
+Za vsakega izmed štirih \textit{režimov} lahko tako zgrafiramo \textit{zlepek}, kjer so meje med posameznimi uporabljenimi metodami določene s presečišči na grafih porabljenega časa.
+
+\begin{figure}[h]
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/cas_ai_abs.pdf}
+    \caption{Čas potreben za 100 iteracij $Ai$ pri vsaki vrednosti $x$ za različne metode pri konstantni absolutni napaki.}
+    % \label{fig:c}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/cas_ai_rel.pdf}
+    \caption{Čas potreben za 100 iteracij $Ai$ pri vsaki vrednosti $x$ za različne metode pri konstantni relativni napaki.}
+    % \label{fig:d}
+  \end{subfigure}
+  \caption{Časovna zahtevnost $Ai$}
+  \label{cas ai}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/cas_bi_abs.pdf}
+    \caption{Čas potreben za 100 iteracij $Bi$ pri vsaki vrednosti $x$ za različne metode pri konstantni absolutni napaki.}
+    % \label{fig:c}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.45\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/cas_bi_rel.pdf}
+    \caption{Čas potreben za 100 iteracij $Bi$ pri vsaki vrednosti $x$ za različne metode pri konstantni relativni napaki.}
+    % \label{fig:d}
+  \end{subfigure}
+  \caption{Časovna zahtevnost $Bi$}
+  \label{cas bi}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{subfigure}{0.43\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/zlepek_ai_abs.pdf}
+    \caption{Čas potreben za 100 iteracij $Ai$ pri vsaki vrednosti $x$ za različne metode pri konstantni absolutni napaki.}
+    % \label{fig:c}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.43\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/zlepek_ai_rel.pdf}
+    \caption{Čas potreben za 100 iteracij $Ai$ pri vsaki vrednosti $x$ za različne metode pri konstantni relativni napaki.}
+    % \label{fig:d}
+  \end{subfigure}
+  % \caption{Časovna zahtevnost $Ai$}
+  % \label{cas ai}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{subfigure}{0.43\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/zlepek_bi_abs.pdf}
+    \caption{Čas potreben za 100 iteracij $Bi$ pri vsaki vrednosti $x$ za različne metode pri konstantni absolutni napaki.}
+    % \label{fig:c}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.43\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/zlepek_bi_rel.pdf}
+    \caption{Čas potreben za 100 iteracij $Bi$ pri vsaki vrednosti $x$ za različne metode pri konstantni relativni napaki.}
+    % \label{fig:d}
+  \end{subfigure}
+  % \caption{Časovna zahtevnost $Bi$}
+  % \label{cas bi}
+\end{figure}
+\newpage
+Pri naši implementaciji se seveda zanašamo, da vemo koliko členov je potrebnih za željeno numerično natančnost. Mislim, da razen pri asimptotski vrsti pozitivnih $x$ za funkcijo $Bi$ ne bi smelo biti težko postaviti zgornjih mej za število potrebnih členov. Tudi, če meje za število členov ne bi imeli, bi naša funkcija delovala dobro, saj smo v asimptotskem razvoju implementirali pogoj za zaustavitev, ko se napaka začne večati, za Maclaurinovo vrstopa lahko preprosto postavimo mejo za maksimalno $\approx 50$ členov, kar nam zagotovi željeno natančnost v vseh režimih. S tem bi sicer zgubili nekaj na časovni zahtevnosti, a bi morda pridobili nekaj na spominu.
 
 \section{Dodatna naloga}
 
@@ -428,6 +506,8 @@ kjer ima funkcija $f$ asimptotski razvoj \cite{1_abram}
   +\frac{77125}{82944} \, z^{-6}
   -\frac{108056875}{6967296} \, z^{-8} + \ldots\right) \>.
 \end{equation*}
+
+
 
 
 \bibliographystyle{plain}
