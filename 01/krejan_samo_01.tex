@@ -507,9 +507,28 @@ kjer ima funkcija $f$ asimptotski razvoj \cite{1_abram}
   -\frac{108056875}{6967296} \, z^{-8} + \ldots\right) \>.
 \end{equation*}
 
+Vrsto za $a_s$ in $b_s$ smo implementirali s funkcijo $f$ in rezultate primerjali z vgrajenima funkcijama $mpmath.airyaizero()$ in $mpmath.airybizero()$
+
+\begin{figure}[ht]
+\begin{center}
+  \includegraphics[width=13cm]{graphs/nicle_draw.pdf}
+  \caption{x vrednost $n$-te ničle}
+  \label{nicle draw}
+\end{center}
+\end{figure}
 
 
+\begin{figure}[ht]
+\begin{center}
+  \includegraphics[width=13cm]{graphs/nicle_err.pdf}
+  \caption{Absolutna napaka $n$-te ničle}
+  \label{nicle err}
+\end{center}
+\end{figure}
+Vidimo sicer, da za nekaj začetnih ničel vrsta ni najbolj natančna, a že po petih členih absolutna napaka pade pod $\ee{-10}$.
 
+
+\newpage
 \bibliographystyle{plain}
 \bibliography{references}
 
