@@ -1,5 +1,6 @@
 \documentclass[slovene,11pt,a4paper]{article}
 \usepackage[margin=2cm,bottom=3cm,foot=1.5cm]{geometry}
+
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5ex}
 
@@ -14,6 +15,8 @@
 \usepackage[slovene]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{siunitx}
+\usepackage{subcaption}
+\usepackage{float}
 
 \def\phi{\varphi}
 \def\eps{\varepsilon}
@@ -64,16 +67,20 @@
 \newcommand{\bec}[1]{\mathbf{#1}}
 
 
+
 \title{
 \sc\large Matematično-fizikalni praktikum \thisyear\\
 \bigskip
 \bf\Large 2.~naloga: Naključni sprehodi
 }
-\author{}
+\author{Samo Krejan, 28231092}
 \date{}
 
+\newcommand{\Ai}{\mathrm{Ai}}
+\newcommand{\Bi}{\mathrm{Bi}}
 \newcommand{\bi}[1]{\hbox{\boldmath{$#1$}}}
 \newcommand{\bm}[1]{\hbox{\underline{$#1$}}}
+
 
 \begin{document}
 \maketitle
@@ -184,78 +191,9 @@ ki je zelo malo občutljiv na oddaljene vrednosti v repih porazdelitve,
 saj te vrednosti na račun mediane bistveno manj vplivajo kot na
 račun običajne povprečne vrednosti.
 
-
-\bigskip
-
-{\sl Naloga:} Napravi računalniško simulacijo
-dvorazsežne naključne hoje za \textbf{polete in sprehode}.  Začni vedno v izhodišču
-($x=y=0$), nato pa določi naslednjo lego tako, da naključno
-izbereš smer koraka in statistično neodvisno od te izbire
-še njegovo dolžino, torej
-\begin{eqnarray*}
-x &\leftarrow& x + l \cos\phi \>, \\
-y &\leftarrow& y + l \sin\phi \>,
-\end{eqnarray*}
-kjer je $\phi$ enakomerno naključno porazdeljen po intervalu
-$[0,2\pi]$, dolžina koraka $l$ pa naj bo porazdeljena
-v skladu s potenčno obliko~(Enačba \ref{lpow}). 
-Dolžine $l_i$ je v tem primeru potrebno generirati po verjetnostni
-porazdelitvi w(l)$\sim$ p(l) (Enačba \ref{lpow}). Za izra\v cun algoritma je osnova naslednja
-formula:
-\begin{equation}
-\int\limits_{a}^{l} w(t)\,  dt = \rho \cdot \int\limits_{a}^{b}  w(t)\, dt,
-\end{equation}
-ki jo je potrebno re\v siti in iz nje izraziti spremenljivko $l$. Tu je 
-$\rho$ (psevdo-)naključno število na intervalu $[0,1]$ ter je $[a,b]$ 
-relevantni interval vzorčenja.
-Za nekatere porazdelitve je izra\v cun preprost, npr $w(t)=\frac{1}{\tau}
-e^{-\frac{t}{\tau}}$ nam da kar:
-\begin{equation}
-l=-\tau \ln(1-\rho).
-\end{equation}
-
-
-Dodatno pomoč za pretvorbo
-med verjetnostnimi porazdelitvami najdeš v gradivu v spletni učilnici 
-ter na spletu. 
-
-{\sl Opomba:} Korakaš lahko tudi v kartezičnem sistemu,
-\begin{eqnarray*}
-x &\leftarrow& x + f_x(\rho_1) \>, \\
-y &\leftarrow& y + f_y(\rho_2) \>,
-\end{eqnarray*}
-kjer sta $\rho_1$ in $\rho_2$ naključni števili na intervalu $[0,1]$
-ali $[-1/2,1/2]$, funkciji $f_{x,y}$ pa morata na koncu podati ustrezno 
-porazdelitev po dolžinah poti glede na potenčno obliko~(\ref{lpow}), kjer 
-lahko določiš zvezo med porazdelitvami po končnih legah $x$ ali $y$ ter  
-po $l=\sqrt{x^2+y^2}$ z uporabo ustreznega Jacobijevega faktorja.
-
-V vsakem primeru nariši nekaj značilnih
-slik sprehodov za $10$, $100$, $1000$ in $10000$ korakov.
-Iz velikega števila sprehodov z velikim številom korakov
-nato poskusi določiti eksponent $\gamma$ za nekaj izbranih
-parametrov $\mu$ oziroma funkcij $f(x)$ v posameznih primerih
-ter presodi, za kakšno vrsto difuzije gre.
-
-\bigskip
-{\sl Dodatna naloga:} Naključno spreminjaj še čas,
-ko delec pred naslednjim korakom miruje (s tako dodatno
-prostostno stopnjo poskušamo modelirati tako imenovani
-``sticking time'' ali ``trapping time'' pri anomalni difuziji
-elektronov v amorfnih snoveh).  Ustrezna verjetnostna gostota
-naj ima potenčno odvisnost
-$$
-p(t) \propto t^{-\nu} \>,
-$$
-kjer $1 < \nu < 2$.  Je ta odvisnost razklopljena od porazdelitve
-osnovnega naključnega sprehoda po dolžinah (oziroma časih)
-posameznih korakov?
-
-
-\begin{thebibliography}{99}
-\setlength{\itemsep}{.2\itemsep}\setlength{\parsep}{.5\parsep}
-\bibitem{weeks} E.~R.~Weeks, J.~S.~Urbach, H.~L.~Swinney, Physica D {\bf 97} (1996) 291.
-\end{thebibliography}
+\newpage
+\bibliographystyle{plain}
+\bibliography{references}
 
 
 \end{document}
