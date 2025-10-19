@@ -7,3 +7,4 @@
 *.blg
 *.md
 /venv
+/02/levy.py
