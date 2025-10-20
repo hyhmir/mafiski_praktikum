@@ -3,7 +3,7 @@ import numpy as np
 import scienceplots
 from funcs import *
 
-np.random.seed(12345)
+np.random.seed(123456)
 plt.style.use(['science'])
 
 
@@ -25,7 +25,7 @@ def save(name='', xlabel='x', ylabel='y', legend=True, grid=True):
     plt.savefig(f'02/graphs/{name.replace(' ', '').replace('$', '').replace('\\', '')}.pdf', dpi=512, bbox_inches='tight')
     plt.clf()
 
-### ploting walks ###
+# ### ploting walks ###
 
 for n in [10, 100, 1000, 10000]:
     walks10, t = gen_flight(n, 3, 1, 2)
@@ -47,7 +47,7 @@ for n in [10, 100, 1000, 10000]:
 
 
 ### primer dolocitve gama ###
-dists, times = gen_dist(10000, 100, 2.5, False)
+dists, times = gen_dist(100000, 100, 2.5, False)
 print(dists.shape)
 log_mad = 2*np.log(fun_mad_std(dists))
 log_time = np.log(times)
@@ -98,18 +98,18 @@ save('$\\mu$ = 3', '$t$', '$\\sigma^2$')
 
 
 def expect1(mu, ni):
-    if ni<=2 and mu>=ni:
+    if mu<=2 and mu<=ni:
         return 2.
-    elif 2<ni<=3 and mu>=2:
+    elif 2<mu<=3 and ni>=2:
         return 4 - mu
-    elif ni>3 and mu>=2:
+    elif mu>3 and ni>=2:
         return 1.
-    elif mu<2:
-        if mu>-1 + ni:
-            return ni-1
-        return 2 + ni - mu
+    elif ni<2:
+        if ni>-1 + mu:
+            return 2 + ni - mu
+        return ni - 1
     
-mus, nis, gamma, c = gen_sequence(False, 20, 1)
+mus, nis, gamma, c = gen_sequence(False, 1, 1)
 
 e_gamma = np.zeros((len(mus), len(nis)))
 for i,mu in enumerate(mus):
@@ -118,12 +118,12 @@ for i,mu in enumerate(mus):
 
 plt.pcolormesh(mus, nis, e_gamma)
 plt.colorbar()
-save('Pričakovani režimi', '$\\mu$', '$\\nu$', False, False)
+save('Pričakovani režimi', '$\\nu$', '$\\mu$', False, False)
 
 
 plt.pcolormesh(mus, nis, gamma)#, vmax=3, vmin=0)
 plt.colorbar()
-save('Dejanski režimi', '$\\mu$', '$\\nu$', False, False)
+save('Dejanski režimi', '$\\nu$', '$\\mu$', False, False)
 
 
 def e_15(x):
@@ -139,10 +139,13 @@ mus = np.arange(1.1, 4., 0.1)
 for mu in mus:
     exp.append(e_15(mu))
 mi = []
+mi_err = []
 for mu in mus:
-    mi.append(calc_gamma(10000, 100, mu, False, 1.5))
+    m, merr = calc_gamma(10000, 100, mu, False, 1.5)
+    mi.append(m)
+    mi_err.append(merr)
 
-plt.scatter(mus, mi, s=1, label='Simulacija')
+plt.errorbar(mus, mi, mi_err, fmt='.', capsize=1, label='Simulacija')
 plt.plot(mus, exp, label='Napoved')
 save('$\\nu$ = 1.5', '$\\mu$', '$\\gamma$')
 
@@ -159,10 +162,13 @@ mus = np.arange(1.1, 4., 0.1)
 for mu in mus:
     exp.append(e_23(mu))
 mi = []
+mi_err = []
 for mu in mus:
-    mi.append(calc_gamma(10000, 100, mu, False, 2))
+    m, merr = calc_gamma(10000, 100, mu, False, 2)
+    mi.append(m)
+    mi_err.append(merr)
 
-plt.scatter(mus, mi, s=1, label='Simulacija')
+plt.errorbar(mus, mi, mi_err, fmt='.', capsize=1, label='Simulacija')
 plt.plot(mus, exp, label='Napoved')
 save('$\\nu$ = 2', '$\\mu$', '$\\gamma$')
 
@@ -171,11 +177,13 @@ exp = []
 mus = np.arange(1.1, 4., 0.1)
 for mu in mus:
     exp.append(e_23(mu))
-mi = []
+mi_err = []
 for mu in mus:
-    mi.append(calc_gamma(10000, 100, mu, False, 3))
+    m, merr = calc_gamma(10000, 100, mu, False, 3)
+    mi.append(m)
+    mi_err.append(merr)
 
-plt.scatter(mus, mi, s=1, label='Simulacija')
+plt.errorbar(mus, mi, mi_err, fmt='.', capsize=1, label='Simulacija')
 plt.plot(mus, exp, label='Napoved')
 save('$\\nu$ = 3', '$\\mu$', '$\\gamma$')
 

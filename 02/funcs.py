@@ -83,9 +83,9 @@ def calc_gamma(n, walks, mu, flight, wait=None):
     # print(distances.shape)
     log_time = np.log(times)
     # print(log_time.shape)
-    a, b = np.polyfit(log_time, log_mad, 1)
+    (a, b), cov = np.polyfit(log_time, log_mad, 1, cov=True)
 
-    return a
+    return a, np.sqrt(np.diag(cov))[0]
 
 # @njit(parallel=True)
 def gen_sequence(flight, repetitions, wait=None):
@@ -94,7 +94,7 @@ def gen_sequence(flight, repetitions, wait=None):
         gammas = np.empty((len(mus), repetitions))
         for i, mu in enumerate(mus):
             for j in range(repetitions):
-                gammas[i, j] = calc_gamma(10000, 100, mu, flight, wait)
+                gammas[i, j] = calc_gamma(10000, 100, mu, flight, wait)[0]
 
         if flight:
             gammas = gammas ** (-1)
@@ -108,7 +108,7 @@ def gen_sequence(flight, repetitions, wait=None):
     for i, mu in enumerate(mus):
         for j, ni in enumerate(nis):
             for k in range(repetitions):
-                gammas[i, j, k] = calc_gamma(10000, 100, mu, flight, ni)
+                gammas[i, j, k] = calc_gamma(10000, 1000, mu, flight, ni)[0]
 
     gamma_means = np.mean(gammas, axis=2)
     gamma_std = np.std(gammas, axis=2, ddof=1)

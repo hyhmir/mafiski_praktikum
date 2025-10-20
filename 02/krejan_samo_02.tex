@@ -84,7 +84,7 @@
 
 \begin{document}
 \maketitle
-\vspace{-1cm}
+%\vspace{-1cm}
 
 Naključni sprehodi so vrsta gibanja, pri katerem
 v velikem številu korakov napredujemo iz izhodišča
@@ -190,6 +190,23 @@ Z njo merimo povprečje absolutne vrednosti deviacije na način,
 ki je zelo malo občutljiv na oddaljene vrednosti v repih porazdelitve,
 saj te vrednosti na račun mediane bistveno manj vplivajo kot na
 račun običajne povprečne vrednosti.
+
+\section{Naloga}
+
+Napravi računalniško simulacijo
+dvorazsežne naključne hoje za \textbf{polete in sprehode}.  Začni vedno v izhodišču
+($x=y=0$), nato pa določi naslednjo lego tako, da naključno
+izbereš smer koraka in statistično neodvisno od te izbire
+še njegovo dolžino, torej $p(l) \propto l^{-\mu}$. V vsakem primeru nariši nekaj značilnih
+slik sprehodov za $10$, $100$, $1000$ in $10000$ korakov.
+Iz velikega števila sprehodov z velikim številom korakov
+nato poskusi določiti eksponent $\gamma$ za nekaj izbranih
+parametrov $\mu$ oziroma funkcij $f(x)$ v posameznih primerih
+ter presodi, za kakšno vrsto difuzije gre.
+
+\section{Simulacija sprehodov in letov}
+
+Predno se lotimo računanja dejanskih količin, bi radi dobili občutek, kako se naključni sprehodi in poleti 
 
 \newpage
 \bibliographystyle{plain}
