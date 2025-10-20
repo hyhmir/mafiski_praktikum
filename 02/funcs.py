@@ -4,7 +4,7 @@ from numba import njit, prange
 import jax
 import jax.numpy as jnp
 
-np.random.seed(1298456)
+# np.random.seed(1298456)
 
 
 @njit(parallel=True)
@@ -26,42 +26,48 @@ def fun_mad_std(arr):
     return 1.4826 * np.median(np.abs(arr - np.median(arr, axis=0)), axis=0)
 
 
-def gen_fi(n, walks, seed):
-    # np.random.seed(seed)
-    return np.random.uniform(0, 2 * np.pi, (walks, n))
+def gen_fi(n, walks, wait=None):
+    if wait == None:
+        return np.random.uniform(0, 2 * np.pi, (walks, n))
+    return np.random.uniform(0, 2 * np.pi, (walks, 2*n))
 
 
-def gen_l(n, walks, l, mu, seed):
-    # np.random.seed(seed)
-    return (np.random.pareto(mu - 1, (walks, n)) + 1) * l
+def gen_l(n, walks, L, mu, wait=None):
+    if wait == None:
+        return (np.random.pareto(mu - 1, (walks, n)) + 1) * L
+    l = np.zeros((walks, 2*n))
+    l[:,::2] = (np.random.pareto(mu - 1, (walks, n)) + 1) * L
+    return l
 
 
-def gen_flight(t, walks, l, mu, seed1, seed2):
-    Fi = gen_fi(t, walks, seed1)
-    L = gen_l(t, walks, l, mu, seed2)
+def gen_flight(t, walks, l, mu):
+    Fi = gen_fi(t, walks)
+    L = gen_l(t, walks, l, mu)
     time = np.arange(1, t + 1)
     return np.cumsum(np.stack((L * np.cos(Fi), L * np.sin(Fi))), axis=-1), time
 
 
-def gen_walk(t, walks, l, mu, seed1, seed2):
-    Fi = gen_fi(t, walks, seed1)
-    L = gen_l(t, walks, l, mu, seed2)
+def gen_walk(t, walks, l, mu, wait=None):
+    Fi = gen_fi(t, walks, wait)
+    L = gen_l(t, walks, l, mu, wait)
     time = np.cumsum(L, axis=-1)
+    if wait != None:
+        time[:,1::2] = (np.random.pareto(wait - 1, (walks, t)) + 1)
     return np.cumsum(np.stack((L * np.cos(Fi), L * np.sin(Fi))), axis=-1), time
 
 
-def gen_dist(n, walks, mu, flight):
+def gen_dist(n, walks, mu, flight, wait=None):
     if flight:
-        fly = gen_flight(n, walks, 1, mu, 10000, 10000)[0]
+        fly = gen_flight(n, walks, 1, mu)[0]
         # print(fly.shape)
         dists = np.linalg.norm(fly, axis=0)[:, 100:]
         # print(dists.shape)
         time = np.arange(100, n)
     else:
-        walk, times = gen_walk(n, walks, 1, mu, 10000, 10000)
+        walk, times = gen_walk(n, walks, 1, mu, wait)
         # print(walk.shape)
         # print(times.shape)
-        time = np.linspace(100, np.min(times[:,-1]), 500)
+        time = np.linspace(100, np.min(times[:,-1]), 1000)
         # print(walk.shape)
         dist = np.linalg.norm(walk, axis=0)
         # print(dist.shape)
@@ -70,41 +76,69 @@ def gen_dist(n, walks, mu, flight):
     return dists, time
 
 
-def calc_gamma(n, walks, mu, flight):
-    distances, times = gen_dist(n, walks, mu, flight)
+def calc_gamma(n, walks, mu, flight, wait=None):
+    distances, times = gen_dist(n, walks, mu, flight, wait)
     log_mad = 2 * np.log(fun_mad_std(distances))
     # print(distances.shape)
     log_time = np.log(times)
     # print(log_time.shape)
+    a, b = np.polyfit(log_time, log_mad, 1)
 
-    def lin(x, a, b):
-        return a * x + b
-    
-    popt, pcov = curve_fit(lin, log_time, log_mad)
-    a, b = popt
-    a_err, b_err = np.sqrt(np.diag(pcov))
-    return a, a_err
+    return a
 
+# @njit(parallel=True)
+def gen_sequence(flight, repetitions, wait=None):
+    if wait == None:
+        mus = np.arange(1.1, 4., 0.1)
+        gammas = np.empty((len(mus), repetitions))
+        for i, mu in enumerate(mus):
+            for j in range(repetitions):
+                gammas[i, j] = calc_gamma(10000, 100, mu, flight, wait)
 
-def gen_sequence(flight, repetitions):
+        if flight:
+            gammas = gammas ** (-1)
+        gamma_means = np.mean(gammas, axis=1)
+        gamma_std = np.std(gammas, axis=1, ddof=1)
 
+        return mus, gamma_means, gamma_std, 1
     mus = np.arange(1.1, 4., 0.1)
-    gammas = np.empty((len(mus), repetitions))
+    nis = np.arange(1.1, 4., 0.1)
+    gammas = np.empty((len(mus), len(nis), repetitions))
     for i, mu in enumerate(mus):
-        for j in range(repetitions):
-            gammas[i, j] = calc_gamma(10000, 1000, mu, flight)[0]
+        for j, ni in enumerate(nis):
+            for k in range(repetitions):
+                gammas[i, j, k] = calc_gamma(1000, 1000, mu, flight, ni)
 
-    if flight:
-        gammas = gammas ** (-1)
-    gamma_means = np.mean(gammas, axis=1)
-    gamma_std = np.std(gammas, axis=1, ddof=1)
+    gamma_means = np.mean(gammas, axis=2)
+    gamma_std = np.std(gammas, axis=2, ddof=1)
 
-    return mus, gamma_means, gamma_std
+    return mus, nis, gamma_means, gamma_std
 
+
+
+def gen_phase():
+    dist2, time2 = gen_dist(10000, 100, 2, False)
+    dist3, time3 = gen_dist(10000, 100, 3, False)
+    mads2 = fun_mad_std(dist2)
+    mads3 = fun_mad_std(dist3)
+    def fun2(t, a):
+        return a*t**2/np.log(t)
+    
+    def fun3(t, a):
+        return a*t/np.log(t)
+    
+    popt2, cov2 = curve_fit(fun2, time2, mads2**2)
+    a2 = popt2
+    a2_err = np.sqrt(np.diag(cov2))
+    popt3, cov3 = curve_fit(fun3, time3, mads3**2)
+    a3 = popt3
+    a3_err = np.sqrt(np.diag(cov3))
+
+    return (a2, a2_err, mads2**2, time2), (a3, a3_err, mads3**2, time3)
 
 
 
 if __name__ == '__main__':
-    print(gen_sequence(False, 10))
+    print(gen_sequence(False, 2, 1))
 
 
