@@ -286,7 +286,7 @@ Regresijo ponovimo za nekaj različnih $\mu$ tako za naključne sprehode kot tud
 
 \begin{figure}[ht]
 \begin{center}
-  \includegraphics[width=8cm]{graphs/poleti.pdf}
+  \includegraphics[width=9cm]{graphs/poleti.pdf}
   \caption{$\gamma^{-1}$ v odvisnosti od $\mu$ (20 vzorcev z 100 sprehodi z 10 000 koraki). Skoraj vse simulacije se v intervalu napake skladajo s teoretičnimi napovedmi.}
   \label{fig: poleti}
 \end{center}
@@ -302,17 +302,117 @@ Ko pa je ta problem razrešen, je zgodba enaka kot pri naključnih poletih, s to
 \newpage
 \begin{figure}[ht]
 \begin{center}
-  \includegraphics[width=8cm]{graphs/sprehodi.pdf}
+  \includegraphics[width=9cm]{graphs/sprehodi.pdf}
   \caption{$\gamma$ v odvisnosti od $\mu$ (20 vzorcev z 100 sprehodi z 10 000 koraki). Simulacije so skoraj v okviru napake. Največje odstopanje opazimo pri $\mu$ blizu 1 in v režimu $2<\mu<3$}
   \label{fig: spre}
 \end{center}
 \end{figure}
 
-Tudi pri sprehodih opazimo, da teorija deluje precej dobro. Imamo sicer nekoliko manjše ujemanje med simulacijami in teorijo, a vseeno lahko precej dobro ločimo med tremi režimi: pri $\mu<2$ (balistični difuziji) je ujemanje zelo dobro razen pri $\mu$ blizu 1. Ugibam, da imamo na tisti točki nekaj problemov z generacijo naključnih dolžin korakov.
+Tudi pri sprehodih opazimo, da teorija deluje precej dobro. Imamo sicer nekoliko manjše ujemanje med simulacijami in teorijo, a vseeno lahko precej dobro ločimo med tremi režimi: pri $\mu<2$ (balistični difuziji) je ujemanje zelo dobro razen pri $\mu$ blizu 1. Ugibam, da imamo na tisti točki nekaj problemov z generacijo naključnih dolžin korakov. SLedi $2<\mu<3$ (super difuzija) kjer je ujemanje precej slabo. Verjetno na tem ozkem intervalu pride do podobnih učinkov faznih prehodov opisanih pri poletih a tokrat pridejo iz leve in desne, tako da imajo močnejši vpliv. Ostane le še režim normalne difuzije, kjer je ujemanje s teorijo spet precej dobro, razen pri faznem prehodu.
 
+\subsection{Posebna primera}
 
+Kot smo videli že na grafu \ref{fig: spre} je obnašanje sprehoda v točkah $\mu = 2$ in $\mu = 3$ nekoliko drugačno. To lahko že intuitivno pričakojemo, saj omenjeni točki stojita točno na prehodu med režimi. Kot piše že v uvodu, za $\mu=2$ pričakujemo $\sigma^2(t) \sim t^2 / \ln t$,
+za $\mu=3$ pa $\sigma^2(t) \sim t \ln t$. Ti dve odvisnosti kvalitativno preverimo s tem, da ju poskušamo \textit{pofitati} in simulaciji in fit nato prikazati na grafu:
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/mu=2.pdf}
+    
+  \end{minipage}%
+  \hfill%
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/mu=3.pdf}
+    
+  \end{minipage}
+  \caption{Odvisnost $\sigma^2$ od časa za $\mu=2$ in $\mu=3$. Simulirano z 100 sprehodi s po 10 000 koraki.}
+  \label{fig: special}
+\end{figure}
+
+Iz grafa \ref{fig: special} vidimo, da teorija vsaj kvalitativno na danem območju drži. Seveda, če bi želeli vedeti zares, bi morali dano simulacijo pognati večkrat, da bi lahko določili napako in povprečje $\sigma^2$. Tako bi potem zares videli ali se stvari skladata ali ne. Tega nisem storil, saj je bila to ena izmed kompleksnejših simulacij, ki je že tako vzela veliko časa in spomina računalniku.
+
+\subsection{Dodatna naloga}
+
+\begin{quote}
+Naključno spreminjaj še čas,
+ko delec pred naslednjim korakom miruje (s tako dodatno
+prostostno stopnjo poskušamo modelirati tako imenovani
+``sticking time'' ali ``trapping time'' pri anomalni difuziji
+elektronov v amorfnih snoveh).  Ustrezna verjetnostna gostota
+naj ima potenčno odvisnost
+$$
+p(t) \propto t^{-\nu} \>
+$$
+\end{quote}
+
+Situacija s čakanjem močno popestri dogajanje. Faktor $\gamma$ namreč ni odvisen več zgolj od $\mu$ temveč tudi od $\nu$. Diagram različnih režimov dobi novo razsežnost in naj bi v teoriji izgledal kot na sliki \ref{fig: screen}
+
+\begin{figure}[ht]
+\begin{center}
+  \includegraphics[width=9cm]{graphs/screen.png}
+  \caption{Različni režimi v odvisnosti od parametrov $\mu$ in $\nu$}
+  \label{fig: screen}
+\end{center}
+\end{figure}
 
 \newpage
+Veljavnost diagrama \ref{fig: screen} lahko hitro preverimo v nekaj točkah, na podoben oziroma kar enak način kot smo to naredili pri grafu \ref{fig: spre}. To sem se odločil preveriti v točkah $\nu = 1.5$ in $\nu=2$. Uspešnost simulacij je razvidna na grafih \ref{fig: nu}
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/nu=1.5.pdf}
+    
+  \end{minipage}%
+  \hfill%
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/nu=2.pdf}
+    
+  \end{minipage}
+  \caption{Odvisnost $\gamma$ od $\mu$ za $\nu=1.5$ in $\nu=2$. Simulirano z 100 sprehodi s po 10 000 koraki.}
+  \label{fig: nu}
+\end{figure}
+Napake meritev na \ref{fig: nu} smo določili kot napake fita v vsaki točki, a smo jo očitno močno podcenili. Spet bi bilo seveda bolje narediti več vzorcev in napako določiti kot deviacijo med njimi. Kljub temu vidimo da točke vsaj približno sledijo teoretični napovedi.
+
+Sam sicer nisem bil zadovoljen, zato sem se odločil, da bom odvisnost preveril, ne le na preseku pri določenem $\nu$ temveč kar po vseh kombinacijah $\mu$ in $\nu$. Odvisnost $\gamma$ sem tako predstavil z t.i. "heat map"-om \ref{fig: heat}
+
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/Pričakovanirežimi.pdf}
+    
+  \end{minipage}%
+  \hfill%
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/Dejanskirežimi.pdf}
+    
+  \end{minipage}
+  \caption{Odvisnost $\gamma$ od $\mu$, $\nu$. Teoretična odvisnost je prikazana na levi, rezultati simulacije pa na desni. Vsaka točka je simulirana z 100 sprehodi s po 10 000 koraki. }
+  \label{fig: heat}
+\end{figure}
+
+\newpage
+Na sliki \ref{fig: heat} seveda vidimo, da je slika dejanskih režimov zelo zelo podobna sliki pričakovanih režimov, čeprav bi za to da iz nje določimo vse režime potrebovali izjemne količine domišljije. Mislim, da lahko to spet pripišemo nenatančnosti na prehodih režimov, ki dobesedno zabriše prej ostre meje med posameznimi režimi. Seveda, bi lahko poskusili dobiti bolše ujemanje z simulacijo večih korakov pri posamezni točki, a je že ta simulacija vzela 45 minut in velik del spomina na mojem računalniku, tako da mislim, da smo lahko zadovoljni z vsaj kvalitativnim ujemanjem.
+
+\section{Zaključek}
+
+Mislim, da je bila naloga opravljena precej uspešno. Simulirali smo naključne sprehode in polete ter z analizo njih potrdili nekatere teoretične napovedi.
+
+Še pomembneje od tega pa sem se skozi vajo veliko naučil. Ker je bila naloga komputacijsko tako zahtevna je bilo potrebno res dobro premisliti preden sem napisal katerokoli vrstico kode. Tudi ko je koda tekla dovolj hitro še ni bilo konca preglavic, saj je bilo potrebno otipati meje pomnilniške zmogljivosti, kar se je vmes med drugim končalo s tem da mi je zamrznil računalnik za 15 minut ker mu je zmankalo spomina in sem mislil, da bom ves napredek izgubil, saj predno sem kodo pognal je nisem shranil. Tudi na koncu, ko je bilo vse zoptimizirano kolikor sem pač zmogel je še vedno trajalo kakšno uro, da je računalnik vse preračunal in narisal. Med tem je seveda dosegal visoke temperature, zato sem med to uro računanja vanj usmeril manjši ventilator, kar sicer dvomim, da je imelo velik vpliv, a me vsaj ni skrbelo, da bi se mi stopila tipkovnica.
+
+Kljub vsem preglavicam, sem med izdelovanjem naloge precej užival.
+
+
+\bigskip
+
 \bibliographystyle{plain}
 \bibliography{references}
 
