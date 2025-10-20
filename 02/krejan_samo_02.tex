@@ -206,7 +206,30 @@ ter presodi, za kakšno vrsto difuzije gre.
 
 \section{Simulacija sprehodov in letov}
 
-Predno se lotimo računanja dejanskih količin, bi radi dobili občutek, kako se naključni sprehodi in poleti 
+Predno se lotimo računanja dejanskih količin, bi radi dobili občutek, kako se naključni sprehodi in poleti sploh obnašajo. 
+
+Naključne korake, sem generiral kot je opisano v navodilih naloge. Tu sem si pomagal z $numpy$ vgrajeno Paretovo porazdelitvijo: 
+$$
+  p(x) = \frac{\alpha x_m^\alpha}{x^{\alpha + 1}}
+$$
+kjer je $x_m$ minimalni možni izid, ki sem ga za simulacije vedno nastavil na $1$, $\alpha$ pa je ekvivalentna $\mu - 1$.
+
+Uporabi vgrajenega Pareta bi se lahko izognil na sledeč način; najprej zapišemo kumulativno porazdelitev Pareta:
+
+$$
+  P(x) = 1 - \left(\frac{x_m}{x}\right)^\alpha
+$$
+za tem lahko uporabimo inverzno transformacijsko metodo. Če najprej generiramo števila $y$ iz uniformne porazdelitve na intervalu $\left[0, 1\right]$ lahko izrazimo inverzno transformacijo:
+
+$$
+  x = x_m\left(\frac{1}{1 - y}\right)^{1/\alpha}
+$$
+ki sledi Paretovi porazdelitvi, lahko pa tudi direktno izrazimo porazdelitev dolžin kot:
+
+$$
+  l = (1 - y)^{-\frac{1}{\mu - 1}}
+$$
+Na koncu se nisem odločil za implementacijo tega v pythonu, saj sem stremel k čim bolj časovno optimiziranem algoritmu in prepričan sem, da je $numpy$ implementacija precej bolje optimizirana kot katerakoli koda, ki jo bom kadarkoli napisal.
 
 \newpage
 \bibliographystyle{plain}

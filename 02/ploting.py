@@ -109,7 +109,7 @@ def expect1(mu, ni):
             return 2 + ni - mu
         return ni - 1
     
-mus, nis, gamma, c = gen_sequence(False, 1, 1)
+mus, nis, gamma, c = gen_sequence(False, 2, 1)
 
 e_gamma = np.zeros((len(mus), len(nis)))
 for i,mu in enumerate(mus):
@@ -177,6 +177,7 @@ exp = []
 mus = np.arange(1.1, 4., 0.1)
 for mu in mus:
     exp.append(e_23(mu))
+mi = []
 mi_err = []
 for mu in mus:
     m, merr = calc_gamma(10000, 100, mu, False, 3)
