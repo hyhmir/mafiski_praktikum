@@ -231,6 +231,87 @@ $$
 $$
 Na koncu se nisem odločil za implementacijo tega v pythonu, saj sem stremel k čim bolj časovno optimiziranem algoritmu in prepričan sem, da je $numpy$ implementacija precej bolje optimizirana kot katerakoli koda, ki jo bom kadarkoli napisal.
 
+S tem problemom razčiščenim se sedaj lahko lotimo risati nekaj različnih sprehodov, da dobimo nekaj občutka za situacijo. Narišemo si sprehode za 10, 100, 1000 in 10 000 korakov s parametrom $\mu = 2$ in $\mu = 3$. Pri majhnih številih še ne opazimo kakih znatnih razlik, pri večjih dveh pa opazimo znatne razlike.
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/N=1000mu=2.pdf}
+    
+  \end{minipage}%
+  \hfill%
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/N=1000mu=3.pdf}
+    
+  \end{minipage}
+
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/N=10000mu=2.pdf}
+    
+  \end{minipage}%
+  \hfill%
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{graphs/N=10000mu=3.pdf}
+    
+  \end{minipage}
+  \caption{3 različni sprehodi za različno število korakov in različen parameter $\mu$}
+  \label{fig: sprehodi}
+\end{figure}
+
+Iz slike \ref{fig: sprehodi} takoj opazimo, da parameter $\mu$ močno vpliva na obnašanje sprehodov, že sama skala na grafih mora biti dva velikostna reda večja pri $\mu = 2$ da cel sprehod sploh lahko predstavimo. Kasneje bomo videli, da je temu tako ker sta $\mu = 2$ in $\mu = 3$ v različnih režimih, tako kot smo to napovedali že v uvodu.
+
+\subsection{Določanje režimov}
+
+V katerem režimu se nahajamo nam bo povedal faktor $\gamma$ opisan v uvodu. Le tega določimo z linearno regresijo:
+
+$$
+  2 * \ln \sigma = \gamma \ln t + c
+$$
+
+Za izvajanje regresije sem uporabil $numpy.polyfit$ funkcijo, ki poleg parametrov \textit{fita} določi tudi njihovo napako.
+
+\begin{figure}[ht]
+\begin{center}
+  \includegraphics[width=8cm]{graphs/Primerdolocitvegamma.pdf}
+  \caption{Faktor $\gamma$ določimo z linearno regresijo. Na sliki je primer regresije za sprehod s parametrom $\mu = 2.5$, z 10 000 koraki in 100 različnimi sprehodi}
+  \label{fig: dol_gamma}
+\end{center}
+\end{figure}
+
+Regresijo ponovimo za nekaj različnih $\mu$ tako za naključne sprehode kot tudi za naključne polete in na ta način dobimo grafe odvisnosti $\gamma$ od $\mu$. Najprej to naredimo za naključne polete, kjer najprej teoretično odvisnost opisano v odvodu lineariziramo in tako na graf \ref{fig: poleti} namesto $\gamma$ rišemo $\gamma^{-1}$
+
+\begin{figure}[ht]
+\begin{center}
+  \includegraphics[width=8cm]{graphs/poleti.pdf}
+  \caption{$\gamma^{-1}$ v odvisnosti od $\mu$ (20 vzorcev z 100 sprehodi z 10 000 koraki). Skoraj vse simulacije se v intervalu napake skladajo s teoretičnimi napovedmi.}
+  \label{fig: poleti}
+\end{center}
+\end{figure}
+\bigskip
+Že pri poletih vidimo, da teorija deluje, saj se praktično vsi podatki simulacij skladajo s teorijo v okviru napake. Kljub temu lahko opazimo trend, da okoli točke $\mu = 3$ simulacije najbolj odstopajo. Čeprav nam to morda ni všeč je lahko pojasniljivo. Tam namreč pride do faznega prehoda med super difuzivnim režimom ($\mu < 3$) in normalno difuzijo ($\mu > 3$). Ker simulacija lahko poteka zgolj s končnim številom sprehodov s končnimi koraki, bo seveda ta prehod manj oster.
+
+\bigskip
+Vajo ponovimo tudi z naključnimi sprehodi. Te so nekoliko bolj kompleksni za generirati in obdelati, saj časovni intervali med posameznimi koraki niso konstantni, pač pa so sorazmerni z dolžino posameznega koraka. Ker si seveda želimo primerjati mnogo različnih sprehodov ob enakomerno razmaknjenih časih, moramo pozicije ob teh v naprej določenih časih interpolirati iz časa pred in po določenem času. Na srečo za to že obstaja funkcija $np.interp$, saj če bi interpolacije implementirali v pythonu bi nam samo ta operacija vzela cel dan.
+
+Ko pa je ta problem razrešen, je zgodba enaka kot pri naključnih poletih, s to izjemo, da nam ni treba obračati $\gamma$ faktorja. Odvisnost vidimo na grafu \ref{fig: spre}
+
+\newpage
+\begin{figure}[ht]
+\begin{center}
+  \includegraphics[width=8cm]{graphs/sprehodi.pdf}
+  \caption{$\gamma$ v odvisnosti od $\mu$ (20 vzorcev z 100 sprehodi z 10 000 koraki). Simulacije so skoraj v okviru napake. Največje odstopanje opazimo pri $\mu$ blizu 1 in v režimu $2<\mu<3$}
+  \label{fig: spre}
+\end{center}
+\end{figure}
+
+Tudi pri sprehodih opazimo, da teorija deluje precej dobro. Imamo sicer nekoliko manjše ujemanje med simulacijami in teorijo, a vseeno lahko precej dobro ločimo med tremi režimi: pri $\mu<2$ (balistični difuziji) je ujemanje zelo dobro razen pri $\mu$ blizu 1. Ugibam, da imamo na tisti točki nekaj problemov z generacijo naključnih dolžin korakov.
+
+
+
 \newpage
 \bibliographystyle{plain}
 \bibliography{references}
