@@ -50,9 +50,10 @@ def gen_flight(t, walks, l, mu):
 def gen_walk(t, walks, l, mu, wait=None):
     Fi = gen_fi(t, walks, wait)
     L = gen_l(t, walks, l, mu, wait)
-    time = np.cumsum(L, axis=-1)
+    time = np.copy(L)
     if wait != None:
-        time[:,1::2] = (np.random.pareto(wait - 1, (walks, t)) + 1)
+        time[:,1::2] += (np.random.pareto(wait - 1, (walks, t)) + 1)
+    time = np.cumsum(time, axis=-1)
     return np.cumsum(np.stack((L * np.cos(Fi), L * np.sin(Fi))), axis=-1), time
 
 
@@ -107,7 +108,7 @@ def gen_sequence(flight, repetitions, wait=None):
     for i, mu in enumerate(mus):
         for j, ni in enumerate(nis):
             for k in range(repetitions):
-                gammas[i, j, k] = calc_gamma(1000, 1000, mu, flight, ni)
+                gammas[i, j, k] = calc_gamma(10000, 100, mu, flight, ni)
 
     gamma_means = np.mean(gammas, axis=2)
     gamma_std = np.std(gammas, axis=2, ddof=1)
