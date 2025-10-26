@@ -190,7 +190,115 @@ fn jacobi(mut a: Vec<Vec<f64>>, tol: f64, max_sweeps: usize) -> (Vec<f64>, Vec<V
     (eigvals, v)
 }
 
+fn gen_q(n: usize) -> Vec<Vec<f64>> {
+    let mut result = vec![vec![0.0_f64; n]; n];
+    for i in 0..n {
+        for j in 0..n {
+            // cast to signed before subtracting to avoid underflow
+            if (i as isize - j as isize).abs() == 1 {
+                result[i][j] = 0.5 * (( (i + j + 1) as f64 ).sqrt());
+            }
+        }
+    }
+    result
+}
 
+fn gen_q_2(n: usize) -> Vec<Vec<f64>> {
+    let mut result = vec![vec![0.0_f64; n]; n];
+    for i in 0..n {
+        for j in 0..n {
+            if i == j {
+                result[i][j] = 0.5 * ((2 * j + 1) as f64);
+            } else if i + 2 == j {
+                // here j >= 2 whenever this branch is true, but use f64 to compute safely
+                let jf = j as f64;
+                result[i][j] = 0.5 * ( (jf * (jf - 1.0)).sqrt() );
+            } else if i == j + 2 {
+                let jf = j as f64;
+                result[i][j] = 0.5 * ( ((jf + 2.0) * (jf + 1.0)).sqrt() );
+            }
+        }
+    }
+    result
+}
+
+fn gen_q_4(n: usize) -> Vec<Vec<f64>> {
+    let mut result = vec![vec![0.0_f64; n]; n];
+    for i in 0..n {
+        for j in 0..n {
+            let jf = j as f64;
+            if i == j {
+                result[i][j] = 0.75 * (2.0 * jf * jf + 2.0 * jf + 1.0);
+            } else if i + 2 == j {
+                // compute polynomial in f64 (use powi)
+                let num = 2.0 * jf.powi(3) - 3.0 * jf.powi(2) + 1.0 * jf;
+                let den = (jf * (jf - 1.0)).sqrt();
+                // protect against division by zero just in case (shouldn't happen for valid j)
+                result[i][j] = if den != 0.0 { 0.5 * (num / den) } else { 0.0 };
+            } else if i == j + 2 {
+                result[i][j] = 0.5 * (((jf + 2.0) * (jf + 1.0)).sqrt() * (2.0 * jf + 3.0));
+            } else if i + 4 == j {
+                let num = jf.powi(4) - 6.0 * jf.powi(3) + 11.0 * jf.powi(2) - 6.0 * jf;
+                let den = (jf * (jf - 1.0) * (jf - 2.0) * (jf - 3.0)).sqrt();
+                result[i][j] = if den != 0.0 { 0.25 * (num / den) } else { 0.0 };
+            } else if i == j + 4 {
+                result[i][j] = 0.25 * (((jf + 4.0) * (jf + 3.0) * (jf + 2.0) * (jf + 1.0)).sqrt());
+            }
+        }
+    }
+    result
+}
+
+
+
+#[pyfunction]
+fn q_4(n: usize, tajp: String) -> PyResult<Vec<Vec<f64>>> {
+    if tajp == "1" {
+        let q = gen_q(n);
+        Ok(matmul(&matmul(&q, &q), &matmul(&q, &q)))
+    }
+    else if tajp == "2" {
+        let qq = gen_q_2(n);
+        Ok(matmul(&qq, &qq))
+    }
+    else if tajp == "4" {
+        Ok(gen_q_4(n))
+    }
+    else {Ok(vec![vec![0.0; n]; n])}
+}
+
+#[pyfunction]
+fn matsum(a: Vec<Vec<f64>>, b: Vec<Vec<f64>>) -> PyResult<Vec<Vec<f64>>> {
+    let n = b[0].len();
+    let mut m = vec![vec![0.0; n]; n];
+    for i in 0..n {
+        for j in 0..n {
+            m[i][j] = a[i][j] + b[i][j]
+        }
+    }
+    Ok(m)
+}
+
+#[pyfunction]
+fn mul(a: f64, b: Vec<Vec<f64>>) -> PyResult<Vec<Vec<f64>>> {
+    let n = b[0].len();
+    let mut m = vec![vec![0.0; n]; n];
+    for i in 0..n {
+        for j in 0..n {
+            m[i][j] = a * b[i][j]
+        }
+    }
+    Ok(m)
+}
+
+#[pyfunction]
+fn harm(n: usize) -> PyResult<Vec<Vec<f64>>> {
+    let mut m = vec![vec![0.0; n]; n];
+    for i in 0..n {
+        m[i][i] = i as f64 + 0.5
+    }
+    Ok(m)
+}
 
 #[pyfunction]
 fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
@@ -414,7 +522,7 @@ fn lanczos_smallest(
     matrix: Vec<Vec<f64>>,
     k: usize,
     m_opt: Option<usize>,       // Lanczos basis size (m >= k). Default: min(n, max(2k, 20))
-    max_iters: Option<usize>,   // overall iteration cap (unused here, but kept)
+    _max_iters: Option<usize>,   // overall iteration cap (unused here, but kept)
 ) -> PyResult<(Vec<f64>, Vec<Vec<f64>>)> {
     // if !is_square(&matrix) {
     //     return Err(PyValueError::new_err("matrix must be square"));
@@ -534,7 +642,7 @@ fn lanczos_smallest(
 }
 
 #[pyfunction]
-fn transposey(a: Vec<Vec<f64>>) -> PyResult<(Vec<Vec<f64>>)> {
+fn transposey(a: Vec<Vec<f64>>) -> PyResult<Vec<Vec<f64>>> {
     let n = a.len();
     let m = a[0].len();
     let mut t = vec![vec![0.0; n]; m];
@@ -558,5 +666,9 @@ fn rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(qr_eigen, m)?)?;
     m.add_function(wrap_pyfunction!(lanczos_smallest, m)?)?;
     m.add_function(wrap_pyfunction!(transposey, m)?)?;
+    m.add_function(wrap_pyfunction!(q_4, m)?)?;
+    m.add_function(wrap_pyfunction!(matsum, m)?)?;
+    m.add_function(wrap_pyfunction!(mul, m)?)?;
+    m.add_function(wrap_pyfunction!(harm, m)?)?;
     Ok(())
 }
