@@ -77,21 +77,21 @@ fn householder_tridiagonal(mut a: Vec<Vec<f64>>) -> (Vec<Vec<f64>>, Vec<Vec<f64>
             *xi /= norm_x;
         }
 
-        // Build Householder matrix H = I - 2vv^T
-        let mut H = vec![vec![0.0; n]; n];
+        // Build householder matrix h = I - 2vv^T
+        let mut h: Vec<Vec<f64>> = vec![vec![0.0; n]; n];
         for i in 0..n {
-            H[i][i] = 1.0;
+            h[i][i] = 1.0;
         }
 
         for i in 0..(n - k - 1) {
             for j in 0..(n - k - 1) {
-                H[k + 1 + i][k + 1 + j] -= 2.0 * x[i] * x[j];
+                h[k + 1 + i][k + 1 + j] -= 2.0 * x[i] * x[j];
             }
         }
 
-        // Apply H to A and accumulate Q
-        a = matmul(&matmul(&transpose(&H), &a), &H);
-        q = matmul(&q, &H);
+        // Apply h to A and accumulate Q
+        a = matmul(&matmul(&transpose(&h), &a), &h);
+        q = matmul(&q, &h);
     }
 
     (a, q)
@@ -103,7 +103,7 @@ fn qr_decompose(a: &Vec<Vec<f64>>) -> (Vec<Vec<f64>>, Vec<Vec<f64>>) {
     let mut q = vec![vec![0.0; n]; n];
     let mut r = vec![vec![0.0; n]; n];
 
-    let mut a_cols: Vec<Vec<f64>> = (0..n).map(|j| (0..n).map(|i| a[i][j]).collect()).collect();
+    let a_cols: Vec<Vec<f64>> = (0..n).map(|j| (0..n).map(|i| a[i][j]).collect()).collect();
 
     for j in 0..n {
         let mut v = a_cols[j].clone();
