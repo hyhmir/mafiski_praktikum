@@ -61,44 +61,46 @@ def hamiltonka(n:int, lam:float):
 # plt.yscale('log')
 # plt.show()
 
-vals, vecs = rs.lanczos_smallest(hamiltonka(200, 0.5), 200, None, None)
-val, vec = np.linalg.eig(hamiltonka(200, 0.5))
+# vals, vecs = rs.lanczos_smallest(hamiltonka(200, 0.5), 200, None, None)
+# val, vec = np.linalg.eig(hamiltonka(200, 0.5))
 
-idx = np.argsort(val)
-val = val[idx]
-vec = vec[:, idx]
+# idx = np.argsort(val)
+# val = val[idx]
+# vec = vec[:, idx]
 
-val_err = []
-for i in range(200):
-    val_err.append(np.abs(vals[i] - val[i]))
-
-
-vecs = rs.transposey(vecs)
-vecs = np.array(vecs)
-vec = vec.T #/ np.max(vec)
-# vecs = np.array(vecs) / np.max(vecs)
-
-# print(vecs[0])
-
-for i in range(len(vecs[0])):
-    vec[i] = vec[i] / vec[i][np.argmax(np.abs(vec[i]))]
-    vecs[i] = vecs[i] / vecs[i][np.argmax(np.abs(vecs[i]))]
-
-vecs_err = rs.matsum(vec, rs.mul(-1., vecs))
-
-plt.plot(val_err)
-plt.show()
-
-plt.imshow(vecs_err[:120][:120])
-plt.colorbar()
-plt.show()
-
-plt.imshow(vecs)
-plt.colorbar()
-plt.show()
+# val_err = []
+# for i in range(200):
+#     val_err.append(np.abs(vals[i] - val[i]))
 
 
-plt.imshow(vec)
-plt.colorbar()
-plt.show()
+# vecs = rs.transposey(vecs)
+# vecs = np.array(vecs)
+# vec = vec.T #/ np.max(vec)
+# # vecs = np.array(vecs) / np.max(vecs)
+
+# # print(vecs[0])
+
+# for i in range(len(vecs[0])):
+#     vec[i] = vec[i] / vec[i][np.argmax(np.abs(vec[i]))]
+#     vecs[i] = vecs[i] / vecs[i][np.argmax(np.abs(vecs[i]))]
+
+# vecs_err = rs.matsum(vec, rs.mul(-1., vecs))
+
+# plt.plot(val_err)
+# plt.show()
+
+# plt.imshow(vecs_err[:120][:120])
+# plt.colorbar()
+# plt.show()
+
+# plt.imshow(vecs)
+# plt.colorbar()
+# plt.show()
+
+
+# plt.imshow(vec)
+# plt.colorbar()
+# plt.show()
+
+
 
