@@ -1,3 +1,5 @@
+use std::vec;
+
 use pyo3::prelude::*;
 
 
@@ -654,6 +656,22 @@ fn transposey(a: Vec<Vec<f64>>) -> PyResult<Vec<Vec<f64>>> {
     Ok(t)
 }
 
+#[pyfunction]
+fn dodatna(n: usize) -> PyResult<Vec<Vec<f64>>> {
+    let mut m = vec![vec![0.0; n]; n];
+    for i in 0..n {
+        m[i][i] = i as f64 + 0.5
+    }
+    let q2 = gen_q_2(n);
+    let q4 = gen_q_4(n);
+    for i in 0..n {
+        for j in 0..n {
+            m[i][j] += -2.5 * q2[i][j] + 0.1 * q4[i][j];
+        }
+    }
+    Ok(m)
+}
+
 
 /// A Python module implemented in Rust.
 #[pymodule]
@@ -670,5 +688,6 @@ fn rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(matsum, m)?)?;
     m.add_function(wrap_pyfunction!(mul, m)?)?;
     m.add_function(wrap_pyfunction!(harm, m)?)?;
+    m.add_function(wrap_pyfunction!(dodatna, m)?)?;
     Ok(())
 }
