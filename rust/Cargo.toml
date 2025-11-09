@@ -9,4 +9,5 @@ name = "rust"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.25.0", features = ["extension-module", "generate-import-lib"] }
+pyo3 = { version = "0.25.0", features = ["extension-module", "generate-import-lib", "num-complex"] }
+num-complex = "0.4"
