@@ -1,6 +1,7 @@
 use pyo3::prelude::*;
 mod fn03;
 mod fn04;
+mod wav;
 
 use crate::fn03::{
     sum_as_string, echo_copy, power_method, jacobi_eigen, lanczos, qr_eigen,
@@ -10,6 +11,8 @@ use crate::fn03::{
 use crate::fn04::{
     dft, idft, gauss
 };
+
+use crate::wav::branje;
 
 
 /// A Python module implemented in Rust.
@@ -31,5 +34,6 @@ fn rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(dft, m)?)?;
     m.add_function(wrap_pyfunction!(gauss, m)?)?;
     m.add_function(wrap_pyfunction!(idft, m)?)?;
+    m.add_function(wrap_pyfunction!(branje, m)?)?;
     Ok(())
 }
