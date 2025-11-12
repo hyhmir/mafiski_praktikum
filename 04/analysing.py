@@ -226,8 +226,13 @@ import timeit
 # plt.show()
 
 
-#### bach #####
+#### bach ##### - uporabljamo numpy fft saj drugace traja 10 minut
 
-signal = np.loadtxt('04/samples/bach44100.txt')
-plt.plot(np.roll(rs.dft(signal), len(signal)//2))
-plt.show()
+# signal = np.loadtxt('04/samples/bach882.txt')
+# plt.plot(np.abs(np.fft.fft(signal) - np.array(rs.dft(signal))))
+# plt.show()
+
+# signal = np.loadtxt('04/samples/bach44100.txt')
+# plt.plot(np.roll(np.fft.fft(signal), len(signal)//2))
+# plt.show() # enako za ostale
+
