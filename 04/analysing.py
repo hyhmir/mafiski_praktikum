@@ -28,7 +28,7 @@ import timeit
 # t=np.linspace(tmin,tmax,n, endpoint=False)
 
 # nu = 2.3
-# signal = (np.cos(2*np.pi*t*nu) + np.sin(2*np.pi*t*0.5) + np.cos(2*np.pi*0.9*t)).tolist()
+# signal = (np.cos(2*np.pi*t*nu) + np.sin(2*np.pi*t*0.5) + np.cos(2*np.pi*0.9*t) + 0.2*(0.5 - np.random.random(len(t)))).tolist()
 
 # dft = rs.dft(signal)
 # Hk=np.roll(dft,int(n/2))/n
@@ -60,31 +60,51 @@ import timeit
 
 #### dft nekaj osnovnih primerov #####
 
-# n = 200 # Number of data points
-# T = 100. # Sampling period
-# dt = T/n
-# tmin=0.
-# tmax=dt*n
-# print("sampling freq:",1./dt)
-# nuc=0.5/dt
-# print("critical freq:",nuc)
+n = 100 # Number of data points
+T = 100. # Sampling period
+dt = T/n
+tmin=0.
+tmax=dt*n
+print("sampling freq:",1./dt)
+nuc=0.5/dt
+print("critical freq:",nuc)
 
-# t=np.linspace(tmin,tmax,n,endpoint=False)
+t=np.linspace(tmin,tmax,n,endpoint=False)
+t_rep = np.linspace(tmin,tmax,100*n,endpoint=False)
 # #sine
-# nu = 0.5
-# signal = np.sin(2*np.pi*t*nu).tolist()
+nu = nuc*0.2
+signal = np.sin(2*np.pi*t*nu)
 
-# dft = rs.dft(signal)
-# Hk=np.roll(dft,int(n/2))/n
+dft = rs.dft(signal)
+Hk=np.roll(dft,int(n/2))/n
 
+nus= np.linspace(-nuc,nuc,n,endpoint=False)
+fig = plt.figure(figsize=(8, 8))
+gs = fig.add_gridspec(4, 1, height_ratios=[1, 1, 1, 1], hspace=0.4)
 
-# plt.plot(t, signal)
-# plt.show()
+# Top subplot (independent x-axis)
+ax1 = fig.add_subplot(gs[0, 0])
+ax1.set_title("Independent x-axis (top)")
 
-# nus = np.linspace(-nuc, nuc, n,endpoint=False)
-# plt.plot(nus, np.real(Hk))
-# plt.plot(nus, np.imag(Hk))
-# plt.show()
+# Bottom three subplots (shared x-axis)
+ax2 = fig.add_subplot(gs[1, 0], sharex=None)  # first of the shared group
+ax3 = fig.add_subplot(gs[2, 0], sharex=ax2)
+ax4 = fig.add_subplot(gs[3, 0], sharex=ax2)
+
+ax1.plot(t, signal,color='g')
+ax2.plot(nus, np.real(Hk),color='b')
+ax2.set_ylabel(r'$Re[H_k]$', size = 'x-large')
+ax3.plot(nus, np.imag(Hk),color='r')
+ax3.set_ylabel(r'$Im[H_k]$', size = 'x-large')
+ax4.plot(nus, np.absolute(Hk)**2,color='y')
+ax4.set_ylabel(r'$\vert H_k \vert ^2$', size = 'x-large')
+ax4.set_xlabel(r'$\nu$', size = 'x-large')
+plt.setp(ax2.get_xticklabels(), visible=False)
+plt.setp(ax3.get_xticklabels(), visible=False)
+
+fig.suptitle('Plot')
+plt.show()
+
 
 # # cosine
 # nu = 0.5

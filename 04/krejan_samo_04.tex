@@ -1,6 +1,5 @@
 \documentclass[slovene,11pt,a4paper]{article}
 \usepackage[margin=2cm,bottom=3cm,foot=1.5cm]{geometry}
-
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.5ex}
 
@@ -15,8 +14,6 @@
 \usepackage[slovene]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{siunitx}
-\usepackage{subcaption}
-\usepackage{float}
 
 \def\phi{\varphi}
 \def\eps{\varepsilon}
@@ -66,25 +63,18 @@
 \renewcommand{\vec}[1]{\overset{\smash{\hbox{\raise -0.42ex\hbox{$\scriptscriptstyle\rightharpoonup$}}}}{#1}}
 \newcommand{\bec}[1]{\mathbf{#1}}
 
-
-
 \title{
-\sc\large Matematično-fizikalni praktikum \thisyear\\
+\sc\large Matematično-fizikalni praktikum \thisyear \\
 \bigskip
 \bf\Large 4.~naloga: Fourierova analiza
 }
 \author{Samo Krejan, 28231092}
 \date{}
 
-\newcommand{\Ai}{\mathrm{Ai}}
-\newcommand{\Bi}{\mathrm{Bi}}
-\newcommand{\bi}[1]{\hbox{\boldmath{$#1$}}}
-\newcommand{\bm}[1]{\hbox{\underline{$#1$}}}
-
-
 \begin{document}
 \maketitle
-\vspace{-1cm}
+% \vspace{-1cm}
+
 
 Pri numeričnem izračunavanju Fourierove transformacije
 \begin{equation}
@@ -169,6 +159,9 @@ Z obratno transformacijo lahko tudi rekonstruiramo $h_k$ iz $H_n$
 (razlika glede na enačbo (\ref{eq:dft}) je le predznak v argumentu
 eksponenta in utež $1/N$).
 
+\bigskip
+
+% {\it Naloga\/}:
 \section{Naloga}
 
 \begin{enumerate}
@@ -187,13 +180,14 @@ partite je bil vzorčen pri \SI{44100}{Hz}, \SI{11025}{Hz}, \SI{5512}{Hz}, \SI{2
 ugotovi, kaj se dogaja, ko se znižuje frekvenca vzorčenja,
 nato pa s Fourierovo analizo zapisov v formatu {\tt .txt}
 to tudi prikaži.
+\end{enumerate}
 
 
+\subsection{Osnovni primeri}
+
+Zaradi časovne zahtevnosti Fourierove transformacije sem se odločil za implementacijo DFT algoritma v RUST programskem jeziku. Metodo sem nato najprej preveril na nekaterih osnovnih primerih, kjer iz teorije vem kaj pričakovati. To sta bila v prvi vrsti čisti realni sinusni in kosinusni signal, kjer sem med drugim namenil veliko pozornosti temu, da sem poskrbel, da je signal vzorčen periodično: torej, če bi kopijo signala "prilepil" na njegovo levo ali desno stran ne bi bilo opaziti nobenih skokov. Za to sem poskrbel tako da sem $numpy$ funkciji linspace dodal parameter $endpoint=False$. Na ta način sem dobil naslednje grafe (\ref{fig: basic})
 
 
-% \newpage
-% \bibliographystyle{plain}
-% \bibliography{references}
 
 
 \end{document}
