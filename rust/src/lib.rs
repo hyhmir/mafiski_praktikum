@@ -9,7 +9,7 @@ use crate::fn03::{
 };
 
 use crate::fn04::{
-    dft, idft, gauss
+    dft, idft, gauss, filter
 };
 
 use crate::wav::branje;
@@ -35,5 +35,6 @@ fn rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(gauss, m)?)?;
     m.add_function(wrap_pyfunction!(idft, m)?)?;
     m.add_function(wrap_pyfunction!(branje, m)?)?;
+    m.add_function(wrap_pyfunction!(filter, m)?)?;
     Ok(())
 }
