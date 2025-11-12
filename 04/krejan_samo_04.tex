@@ -14,6 +14,8 @@
 \usepackage[slovene]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{siunitx}
+\usepackage{hyperref}
+
 
 \def\phi{\varphi}
 \def\eps{\varepsilon}
@@ -246,7 +248,7 @@ Vidimo, da na levem delu slike \ref{fig: gauss} pri Fourierevem obratu pride do 
 
 \subsection{Problem neperiodičnosti}
 
-V prejšnjem poglavju sem omenil, da sem namenil kar nekaj pozornosti namenil ohranjanju periodičnosti signala (tako, da sem uporabil zastavico $endpoint=False$ pri numpy linspace). A kaj bi se zgodilo, če na to ne bi bil pozoren? Izkaže se, da pride do pojava \textit{puščanja} (ang: leakage). Zaradi le tega višine vrhov niso več sorazmerne z jakostjo signala in sam signal ni več omejen na eno samo frekvenco. Vizualno se to lepo vidi na skili \ref{fig: puscanje}, kjer je signalu iz slike \ref{fig: basic2} dodana zgolj ena točka, ki uniči periodičnost a zaradi nje že vidimo puščanje.
+V poglavju 1.1 sem omenil, da sem namenil kar nekaj pozornosti namenil ohranjanju periodičnosti signala (tako, da sem uporabil zastavico $endpoint=False$ pri numpy linspace). A kaj bi se zgodilo, če na to ne bi bil pozoren? Izkaže se, da pride do pojava \textit{puščanja} (ang: leakage). Zaradi le tega višine vrhov niso več sorazmerne z jakostjo signala in sam signal ni več omejen na eno samo frekvenco. Vizualno se to lepo vidi na skili \ref{fig: puscanje}, kjer je signalu iz slike \ref{fig: basic2} dodana zgolj ena točka, ki uniči periodičnost a zaradi nje že vidimo puščanje.
 
 % \newpage
 \begin{figure}[ht]
@@ -272,7 +274,119 @@ Vidimo, da na srečo težava s periodičnostjo ne vpliva na $\vert H_k\vert^2$, 
 
 \subsection{Potujitev}
 
-Do naslednjega izziva sem prišel, ko sem poskusil narediti Fourierev obrat za harmonične signale s frekvenco 
+Do naslednjega izziva sem prišel, ko sem poskusil narediti Fourierev obrat za harmonične signale s frekvenco višjo od Nyquistove frekvence ($\nu_N$). Ko sem recimo skušal narediti obrat signala s frekvenco enako $2,3\nu_N$ sem dobil transformacijo ekvivalentno transformaciji signala s frekvenco $0,3\nu_N$.
+
+Izkaže se, da je temu tako, saj če signal vzorčimo s frekvenco $2\nu_N$ je vzor čenje ekvivalentno za signale s frekvencami $\nu + 2k\nu_N;\  k \in \mathbb{N}$. To je lepo ponazoreno na sliki \ref{fig: potujitev signal}
+
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/potujitev_sig.pdf}
+        \caption{Grafi kosinusnih signalov s frekvencami (od spodaj navzgor) $0,3\nu_N$, $0,3\nu_N + 2\nu_N$, $0,3\nu_N + 4\nu_N$. Vidimo, da če funkcijo vzorčimo s frekvenco $2\nu_N$ dobimo pri vseh signalih enake vrednosti (črne točke)}
+        \label{fig: potujitev signal}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/potujitev_fur.pdf}
+        \caption{Fourierev obrat ene izmed funkcij na sliki \ref{fig: potujitev signal}. Zaradi potujitve je nemogoče vedeti katero izmed funkcij smo vzorčili\\ \\}
+        \label{fig: potujitev fur}
+    \end{minipage}
+\end{figure}
+
+
+\subsection{Filtriranje}
+
+Kot smo videli, je potujitev zahrbten pojav, zaradi katerega nam višje frekvence (velikokrat se pojavijo kot šum) uničijo spekter signala ki ga iščemo (več o tem bomo videli kasneje). Zaradi tega razloga se pri eksperimentih kjer nas zanima spekter odziva ponavadi uporablja vzorčenje pri zelo visokih frekvencah. A večinokrat nas visoke frekvence ne zanimajo in se jih za to želimo znebiti. 
+
+To lahko storimo z visokofrekvenčnim filtrom (največkrat implementiranim "hardversko" v spektrometru), ki preden se izvede DFT, zgladi signal tako, da naredi konvolucijo signala z Gaussovo funkcijo z $\sigma=1/f_f$, kjer je $f_f$ frekvenca filtra, ki je tipično enaka nekaj $\nu_N$. Učinkovitost filtriranja je prikazana na sliki \ref{fig: filter}
+
+
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/unfiltered.pdf}
+        % \caption{Caption for image 1}
+        % \label{fig:image1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/filtered.pdf}
+        % \caption{Caption for image 2}
+        % \label{fig:image2}
+    \end{minipage}
+    \caption{Fourierev obrat $H_k$ kombiniranega in zašumljenega signala $h_k$ brez filtra (levo) in s filtrom (desno). Vidimo, da so visoke frekvence močno "porezane", medtem ko so nizke skoraj nespremenjene.}
+    \label{fig: filter}
+\end{figure}
+
+
+
+\subsection{Natančnost in hitrost implementacije}
+
+Do te točke sem samozavestno uporabljal lastno implementacijo, na tej točki pa se sprašujem, če je le to opravičeno. Uspešna implementacija mora biti natančna in sorazmerno hitra. 
+
+\subsubsection{Natančnost}
+
+Natančnost implementacije sem preveril tako, da sem vzel Gaussovo funkcijo, jo Fourierovo transformiral (DFT) in nato naredil še obratno transformacijo (iDFT). Napaka implementacije sem nato ocenil kot razliko med originalnim signalom in dvakrat transformiranim. Dobljeno natančnost sem primerjal z na enak način ocenjeno natančnostjo $numpy$-jeve implementacije "fft". Rezultate sem prikazal na grafu \ref{fig: natančnost}
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/napaka.pdf}
+    \caption{Primerjava natančnosti lastne implementacije in $numpy$-jeve}
+    \label{fig: natančnost}
+\end{center}
+\end{figure}
+
+Čeprav je $numpy$-jeva implementacija skoraj dva velikostna reda bolj natančna, se tudi natančnost lastne implementacije giblje okoli numerične natančnosti računalnika, tako da osebno sem precej zadovoljen z dobljenim.
+
+\newpage
+
+\subsubsection{Hitrost}
+
+V teoriji je časovna zahtevnost DFT algoritma kvadratična, kar sem preveril tako, da sem za različne dolžine signala dvajsetkrat izvedel lastno implementacijo DFT in vsakič beležil potreben čas. Tako sem lahko ocenil povprečen čas za izvedbo DFT kot pa tudi napako le tega. Na "izmerjene" podatke sem na to fital kvadratno funkcijo $t = an^2 + bn + c$ in dobil vrednosti $a = (1.11 \pm 0.07)\cdot 10^{-7}\ s$, $b = (4 \pm 2)\cdot 10^{-6}\ s$ in $c = (-3 \pm 2)\cdot 10^{-5}\ s$. Uspešnost fita je skupaj s podatki prikazana na sliki \ref{fig: cas}
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/time.pdf}
+    \caption{Časovna zahtevnost DFT}
+    \label{fig: cas}
+\end{center}
+\end{figure}
+
+\subsection{Bach}
+
+Del naloge je bil poslušati in kasneje analizirati zvočne posnetke Bachove partite za violinin solo, pri različnih frekvencah vzorčenja.
+
+Že pri poslušanju se je opazilo (slišalo), da vzorčenje pri višji frekvenci ponuja bolj bogat zvok, kjer slišimo tudi višje frekvence, medtem ko vzorčenje z zelo nizkimi frekvencami zveni skoraj zašumljeno. Iz prej naučenega sem že med poslušanjem sklepal, da slišim posledice učinka potujitve. To seveda lahko preverim le tako, da izvedem Fourierev obrat vseh posnetkov in si ogledam v čem se spektri razlikujejo. Na ta način sem dobil graf \ref{fig: bach}
+
+Na grafu res dobro vidimo kako so v spektru vidne višje frekvence le če vzorčimo z dovolj visoko frekvenco. Sicer sem izbrisal skalo na $y$ osi zaradi preglednosti, a tam se je dalo videti tudi, da se same višine spektrov močno razlikujejo. Temu je tako saj je vrjetno prišlo do potujitve in so se višje frekvence (če je bilo vzorčenje prepočasno) preslikale nižje na spekter in tako spremenile vrednosti na tistih točkah. Potujitev pojasni tudi slišano zašumljenost/popačenost glasbe.
+\newpage
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=\linewidth]{graphs/Bach.pdf}
+    \caption{Spekter Bachove partite posnete z vzorčenjem s frekvencami (od zgoraj navzdol) \SI{44100}{Hz}, \SI{11025}{Hz}, \SI{5512}{Hz}, \SI{2756}{Hz}, \SI{1378}{Hz} in \SI{882}{Hz}}
+    \label{fig: bach}
+\end{center}
+\end{figure}
+\newpage
+
+\section{Dodatna naloga}
+Ker imam iz praktikumskih vaj travme sem se odločil da bom namesto, da analiziram resonator že drugič, raje analiziral glasbo, ki jo poslušam vsak dan. S tem razlogom sem se odločil da naredim preprost vizualizator glasbe (z mnogo pomoči Chat-GPTja), s katerim sem nato med drugim analiziral pesem Back in Black izvajalca AC/DC.
+
+Posnetek demonstracije uporabe je (upam da) pripet zraven tega poročila. Če pa bi se kdo, ki bere to poročilo odločil vizualizator preizkusiti s še kakšno drugo glasbo (ki mora biti v 16bit 1 channel wav formatu) lahko kodo in navodila za uporabu najde na mojem \href{https://github.com/hyhmir/mafiski_praktikum.git}{githubu}
+
+\section{Zaključek}
+
+Na tej točki moram priznati, da imam v resnici že nekaj predhodnih izkušenj z Fourierovo transformacijo, saj sem na IJS napisal program za zbiranje in obdelavo podatkov NMR eksperimentov. 
+
+Kljub temu, se mi zdi, da sem se tekom naloge naučil marsikaj novega. Predvsem se še nikoli doslej nisem lotil samostojne implementacije DFT in pa uporabe le te na sintetično pridobljenih signalih oziroma na glasbi. Sploh slednje je v meni vzbudilo kar nekaj zanimanja, tako da sem se posledično naučil veliko tudi o zgodovini $44,1kHz$.
+
+Poleg tega sem nekoliko izostril svoje $matplotlib$ sposobnosti (upam da se opazi), čeprav me je kasneje, ko sem slike želel vstaviti v \LaTeX \ začela boleti glava, saj slike niso šle kamor sem si želel (verjetno se opazi).
+
+Mislim, da lahko nalogo razglasim kot uspešno.
 
 
 \end{document}

@@ -533,7 +533,7 @@ plt.setp(ax3.get_xticklabels(), visible=False)
 plt.savefig('04/graphs/unfiltered.pdf', dpi=512)
 plt.close(fig)
 
-signal = np.real(rs.filter(signal, 2*nuc*dt))
+signal = np.real(rs.filter(signal, 3*nuc*dt))
 
 dft = rs.dft(signal)
 Hk=np.roll(dft,int(n/2))/n
