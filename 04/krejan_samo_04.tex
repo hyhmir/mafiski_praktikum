@@ -185,9 +185,94 @@ to tudi prikaži.
 
 \subsection{Osnovni primeri}
 
-Zaradi časovne zahtevnosti Fourierove transformacije sem se odločil za implementacijo DFT algoritma v RUST programskem jeziku. Metodo sem nato najprej preveril na nekaterih osnovnih primerih, kjer iz teorije vem kaj pričakovati. To sta bila v prvi vrsti čisti realni sinusni in kosinusni signal, kjer sem med drugim namenil veliko pozornosti temu, da sem poskrbel, da je signal vzorčen periodično: torej, če bi kopijo signala "prilepil" na njegovo levo ali desno stran ne bi bilo opaziti nobenih skokov. Za to sem poskrbel tako da sem $numpy$ funkciji linspace dodal parameter $endpoint=False$. Na ta način sem dobil naslednje grafe (\ref{fig: basic})
+Zaradi časovne zahtevnosti Fourierove transformacije sem se odločil za implementacijo DFT algoritma v RUST programskem jeziku. Metodo sem nato najprej preveril na nekaterih osnovnih primerih, kjer iz teorije vem kaj pričakovati. To sta bila v prvi vrsti čisti realni sinusni in kosinusni signal, kjer sem med drugim namenil veliko pozornosti temu, da sem poskrbel, da je signal vzorčen periodično: torej, če bi kopijo signala "prilepil" na njegovo levo ali desno stran ne bi bilo opaziti nobenih skokov. Za to sem poskrbel tako da sem $numpy$ funkciji linspace dodal parameter $endpoint=False$. Na ta način sem dobil grafe (\ref{fig: basic1}, \ref{fig: basic2})
+
+Na slik \ref{fig: basic1} vidimo že vse lastnosti Fourierjevega obrata, ki so opisane v uvodu. Ker je kosinusni signal realen in sod je tak tudi Fourierev obrat in ker je sinusni signal realen in lih, je njegov Fourierev obrat imaginaren in lih. 
+
+Slika \ref{fig: basic2} je super ponazoritev uporabnosti Fourierjevega obrata, saj smo z njim uspeli nek \textit{čuden} signal dekonstruirati nazaj v njegove harmonične komponente
+\newpage
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/sin.pdf}
+        % \caption{Caption for image 1}
+        % \label{fig:image1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/cos.pdf}
+        % \caption{Caption for image 2}
+        % \label{fig:image2}
+    \end{minipage}
+    \caption{Fourierev obrat $H_k$ sinusnega signala $h_k$ (levo) in cosinusnega signala $h_k$ (desno)}
+    \label{fig: basic1}
+\end{figure}
+
+\begin{figure}[ht]
+\begin{center}
+  \includegraphics[width=8cm]{graphs/combo.pdf}
+  \caption{Fourierev obrat $H_k$ kombinacije sinusnega in kosinusnega signala $h_k$ z različnima frekvencama}
+  \label{fig: basic2}
+\end{center}
+\end{figure}
 
 
+% \newpage
+Naslednji pomemben osnoven primer, ki sem si ga pogledal je DFT Gaussove funkcije. Ta je nekoliko specifičen, saj če ga želimo narediti periodičnega v smislu da je prva točka vzorčenja tista, ki ustreza vrednosti $x=0$, moramo vzorčenje pravzaprav presekati na polovici in nato desno polovico premakniti na levo stran, levo pa na desno. Temu je tako, saj DFT predvideva, da se naše vzorčenje vendo začne v izhodišču. Razlika med upoštevanjem tega detajla in ne je prikazana na sliki \ref{fig: gauss}
+
+\newpage
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/gauss_non_periodic.pdf}
+        % \caption{Caption for image 1}
+        % \label{fig:image1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/gauss_periodic.pdf}
+        % \caption{Caption for image 2}
+        % \label{fig:image2}
+    \end{minipage}
+    \caption{Fourierev obrat $H_k$ Gaussove funkcije $h_k$ ki je periodična (desno) in ne-periodična (levo)}
+    \label{fig: gauss}
+\end{figure}
+Vidimo, da na levem delu slike \ref{fig: gauss} pri Fourierevem obratu pride do nekih "dodatnih sinusov" kar se da teoretično razložiti kot Fourierjev obrat Gaussove funkcije prestavljene v desno, na desni pa vidimo (kot je pričakovati), da je obrat Gaussove funkcije Gaussova funkcija.
+
+\subsection{Problem neperiodičnosti}
+
+V prejšnjem poglavju sem omenil, da sem namenil kar nekaj pozornosti namenil ohranjanju periodičnosti signala (tako, da sem uporabil zastavico $endpoint=False$ pri numpy linspace). A kaj bi se zgodilo, če na to ne bi bil pozoren? Izkaže se, da pride do pojava \textit{puščanja} (ang: leakage). Zaradi le tega višine vrhov niso več sorazmerne z jakostjo signala in sam signal ni več omejen na eno samo frekvenco. Vizualno se to lepo vidi na skili \ref{fig: puscanje}, kjer je signalu iz slike \ref{fig: basic2} dodana zgolj ena točka, ki uniči periodičnost a zaradi nje že vidimo puščanje.
+
+% \newpage
+\begin{figure}[ht]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/combo.pdf}
+        % \caption{Caption for image 1}
+        % \label{fig:image1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/non_periodic.pdf}
+        % \caption{Caption for image 2}
+        % \label{fig:image2}
+    \end{minipage}
+    \caption{Fourierev obrat $H_k$ kombiniranega signala (glej sliko \ref{fig: basic2}) $h_k$ ki je periodična (desno) in ne-periodična (levo)}
+    \label{fig: puscanje}
+\end{figure}
+
+Vidimo, da na srečo težava s periodičnostjo ne vpliva na $\vert H_k\vert^2$, tako kot smo to lahko opazili že pri Gaussovi funkciji na sliki \ref{fig: gauss}
+
+\subsection{Potujitev}
+
+Do naslednjega izziva sem prišel, ko sem poskusil narediti Fourierev obrat za harmonične signale s frekvenco 
 
 
 \end{document}
