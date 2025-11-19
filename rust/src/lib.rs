@@ -1,6 +1,7 @@
 use pyo3::prelude::*;
 mod fn03;
 mod fn04;
+mod fn05;
 mod wav;
 
 use crate::fn03::{
@@ -10,6 +11,10 @@ use crate::fn03::{
 
 use crate::fn04::{
     dft, idft, gauss, filter
+};
+
+use crate::fn05::{
+    fft
 };
 
 use crate::wav::branje;
@@ -36,5 +41,6 @@ fn rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(idft, m)?)?;
     m.add_function(wrap_pyfunction!(branje, m)?)?;
     m.add_function(wrap_pyfunction!(filter, m)?)?;
+    m.add_function(wrap_pyfunction!(fft, m)?)?;
     Ok(())
 }
