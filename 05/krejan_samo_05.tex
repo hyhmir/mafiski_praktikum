@@ -238,8 +238,107 @@ Uspešnost avtokorelacije zašumljenega signala harmonikov in potrebnim časom z
 \end{center}
 \end{figure}
 
-Takoj opazimo, da je implementacija z FFT daleč najboljša, zato sem od te točke naprej uporabljal kar to.
+Takoj opazimo, da je implementacija z FFT daleč najhitrejša, zato sem od te točke naprej uporabljal kar to. Poleg tega opazimo tudi, da je avtokorelirana funkcija izgubila precej šuma, kar je odlična posledica avtokorelacije, ki nam bo kasneje prišla prav.
 
+\subsection{Analiza posnetkov}
+
+Na tej točki sem končno opremljen z vsemi potrebnimi orodji, da se lotim analize posnetkov sov. Najprej sem uporabil najbolj primitivno izmed orodij - lastna ušesa in iz poslušanja sklepal, da posnetek mix22 pripada sovi bubo2, medtem ko se mi zdi, da ostali pripadajo sovi bubo.
+
+Predno pa sem se lotil potrjevati zgornjo hipotezo, sem želel dobiti še nekaj več občutka za posamezne posnetke, tako da sem z $matplotlib$ funkcijo $specgram$ najprej narisal spektogram posameznih posnetkov. Na ta način sem dobil grafe na sliki \ref{gram}
+
+Sovi bo verjetno najlažje ločiti na podlagi frekvence skovikov, zato sem na prvi točki naredil zgolj Fourierovo transformacijo in dobil graf \ref{fft}
+
+Hitro vidimo nekaj ujemanja med vrhovi frekvenc, a si sam, zaradi očitno mnogo šuma ne upam trditi, da dobljeni rezultati potrdijo mojo hipotezo. Zato sem se odločil narediti še relativno avtokorelacijsko funkcijo vseh posnetkov. Na ta način sem dobil graf \ref{ac}
+
+Z dobljenimi grafi si nisem znal pomagati, nato pa sem se spomnil, kako avtokorelacija "polepša"\ podatke in bo tako Fourierova transformacija na avtokorelacijski funkciji izgledala bolje. Tako sem se odločil izvesti najprej avtokorelacijo in nato FFT in pa tudi dvakrat avtokorelacijo in nato FFT. Na ta način sem dobil sliki \ref{acfft} in \ref{acacfft}
+
+Predvsem na zadnji sliki sedaj res lepo vidimo, da imata signala frekvenco pri precej distinktnih frekvencah (različni frekvenci skovika), tako da lahko končno z odločnostjo trdim, da imam očitno dovolj dober posluh, da lahko ločim dve sovi. Avtokorelacija in pa FFT sta se seveda pri tem izkazala kot dva ključna algoritma, ki misim, da sem jih uporabil uspešno.
+\newpage
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=14cm]{graphs/specgram.pdf}
+    \caption{Spektogrami posnetkov. Nekatere lastnosti posnetkov lahko razberemo že iz spektrograma. Vidimo lahko naprimer, kako močno sta zašumljena posnetka mix2 in mix22, saj se na njima sam skovik vidi le še z nekaj domišljije. Poleg tega lahko na spektrogramu posnetka bubo vidimo celo višje frekvence skovika}
+    \label{gram}
+\end{center}
+\end{figure}
+
+\newpage
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=13cm]{graphs/fft.pdf}
+    \caption{Fourierova transformacija vseh posnetkov}
+    \label{fft}
+\end{center}
+\end{figure}
+
+
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=13cm]{graphs/ac.pdf}
+    \caption{Avtokorelacijska funkcija vseh posnetkov}
+    \label{ac}
+\end{center}
+\end{figure}
+
+
+\newpage
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=13cm]{graphs/acfft.pdf}
+    \caption{Avtokorelacijska funkcija Fourierovo transformirana}
+    \label{acfft}
+\end{center}
+\end{figure}
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=13cm]{graphs/acacfft.pdf}
+    \caption{Avtokorelacijska funkcija avtokorelacijske funkcije Fourierovo transformirana}
+    \label{acacfft}
+\end{center}
+\end{figure}
+
+\newpage
+
+\section{Dodatna naloga}
+
+Za dodatno nalogo sem se odločil na hitro analizirati uspešnost generatorjev naključnih števil. Primerjal sem numpy-jev random.random algoritem, in pa starodaven RANDU algoritem, ki ga je v 60ih razvil IBM. 
+
+Naloge sem se lotil tako, da sem generiral seznamu naključnih števil dolžine $2^{25}$ najprej z enim in nato še z drugim algoritmom, in nato izvedel avtokorelacijsko funkcijo na posameznem seznamu. Idealen generator naključnih števil bi imel pri zelo dolgem seznamu avtokorelacijsko funkcijo povsod enako nič, razen pri zamiku nič. Kaj sem dobil dejansko za omenjena primera je razvidno na slikah \ref{nump} in \ref{rand}.
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/nump.pdf}
+    \caption{Avtokorelacijska funkcija numpy-evega naključnega generatorja}
+    \label{nump}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/rand.pdf}
+    \caption{Avtokorelacijska funkcija RANDU naključnega generatorja}
+    \label{rand}
+\end{center}
+\end{figure}
+
+
+Kot vidimo je numpy-jev generator precej bolj uspešen, saj pri RANDU opazimo nekaj koreliranosti. Kljub temu mislim, da je glede na starost generatorja tudi RANDU precej uspešen.
+
+
+\section{Zaključek}
+
+Vaja je bila gotovo uspešeno izvedena, saj smo dosegli cilj in uspeli identificirati sove, tudi ko je bilo v ozadju mnogo ostalih zvokov. To nam je uspelo s pomočjo avtokorelacije in FFT algoritma, ki se izkažeta, kot dva izmed bolj pomembnih algoritmov, ko prido do iskanja vzorcev v signalih. 
+
+Kljub eleganci algoritmov, mi je bila ta vaja najmanj všeč med vsemi do sedanjimi, verjetno tudi zato, ker sem imel zanjo najmanj časa in sem se tako težje poglobil v nalogo. Upam, da se to ne odraža nikjer drugje kot v uri oddaje naloge.
+
+Sigurno se pomankanje časa odraža v poročilu pri poziciji grafov, ki so po dobri uri srdite borbe ostali nepremagani in samozavestno na koncu poročila. Upam, da to ne moti preveč.
+
+Na koncu, sem se kljub veliko preglavicam naučil mnogo novega in morda bom po tem, ko se naspim, priznal, da je bilo celo vredno truda :)
 
 
 \end{document}
