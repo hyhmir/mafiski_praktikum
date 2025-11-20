@@ -17,7 +17,7 @@
 \usepackage{hyperref}
 
 
-\def\phi{\varphi}
+% \def\phi{\varphi}
 \def\eps{\varepsilon}
 \def\theta{\vartheta}
 
@@ -196,6 +196,50 @@ ali knjižnice {\tt fftw3}, ki je še dosti hitrejša. V okolju Python
 so te rutine vključene v 'fft' paket. 
 (Pri tako velikih vzorcih je skorajda nujno uporabiti FFT
 namesto počasne navadne DFT.)
+
+\subsection{FFT}
+
+Nalogo sem začel tako, da sem najprej naredil lastno implementacijo hitre Fourierove transformacijev Rust-u. Ta mi sicer ni uspela najbolje saj je med drugim delovala zgolj za sezname katerih dolžina je potenca števila 2 in pa, čeprav je dosegala natančnosti v bližini numerične zmogljivosti dvojne natančnosti, je bila mnogo počasnejša od $numpy.fft.fft$ implementacije (slika \ref{speed}), tako da sem se v nadaljevanju naloge odločil uporabljati kar $numpy$ implementacijo.
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/speed.pdf}
+    \caption{Čas potreben za izvedbo FFT v odvisnosti od velikosti seznama (potence števila 2). Kvalitativno lahko vidimo, da časovna zahtevnost res ustreza $O(n\log n)$ in pa tudi, da je numpy implementacija mnogo boljša.}
+    \label{speed}
+\end{center}
+\end{figure}
+
+\subsection{Avtokorelacijska funkcija}
+
+Ker bomo kasneje naredili avtokorelacijo signalov z hitrim vzorčenjem je pomembno, da poskrbimo, da je algoritem s katerim računamo avtokorelacijo čim bolj učinkovit. Zato sem analiziral tri implementacije avtokorelacije, sicer:
+
+1. Osnovna implementacija v Pythonu po definiciji iz uvoda:
+\begin{equation*}
+\phi_{hh}(n)= \frac{1}{N-n}\sum_{k=0}^{N-n-1} h_{k+n}\, h_k \>.  
+\end{equation*}
+
+2. Po definiciji iz uvoda z "zero padding" za uporabo $numpy$:
+\begin{equation*}
+\phi_{hh}(n)={1\over N-n}\sum_{k=0}^{2N-1}\widetilde{h}_{k+n}\,\widetilde{h}_k \>,  
+\end{equation*}
+
+3. Navsezadnje pa še z uporabo FFT algoritma, kot je opisano v uvodu:
+\begin{equation*}
+  \phi_{hh}(n) = \frac{1}{N-n}{\cal F}^{-1} \left[ \, | H |^2 \, \right] \>.
+\end{equation*}
+
+Uspešnost avtokorelacije zašumljenega signala harmonikov in potrebnim časom za vsako iteracijo, sem prikazal na grafu \ref{test}
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=12cm]{graphs/testni.pdf}
+    \caption{Signal, njegova avtokorelacija (bralec naj bo pozoren na zamike za namen lepšega prikaza), ter časovna zahtevnost}
+    \label{test}
+\end{center}
+\end{figure}
+
+Takoj opazimo, da je implementacija z FFT daleč najboljša, zato sem od te točke naprej uporabljal kar to.
+
 
 
 \end{document}
