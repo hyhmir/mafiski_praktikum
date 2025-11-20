@@ -5,6 +5,7 @@
 *.synctex.gz
 *.bbl
 *.blg
+*.out
 *.md
 /venv
 /02/levy.py
