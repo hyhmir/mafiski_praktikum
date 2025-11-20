@@ -79,11 +79,13 @@ names = ['bubo', 'bubo2', 'mix', 'mix1', 'mix2', 'mix22']
 # for i, ax in enumerate(axes):
 #     d = data[i] / norm
 #     sample_rate = sampling[i]
-#     pxx, freqs, bins, im = ax.specgram(d, Fs=sample_rate)
+#     pxx, freqs, bins, im = ax.specgram(d, Fs=sample_rate, NFFT=512)
 #     ax.set_title(f'Spektrogram {names[i]}.wav')
 #     ax.set_xlabel('Čas [s]\n\n')
 #     ax.set_ylabel('Frekvenca [Hz]')
 #     fig.colorbar(im, ax=ax)
+#     ax.set_ylim((0, 10000))
+#     # ax.heatmap(pxx[:pxx.shape[0]//2,])#, ax=ax)
 
 # plt.tight_layout()
 
@@ -178,53 +180,163 @@ def auto_corr_fft(h, minus_n = True):
 
     return fis, ns, times
 
+def auto_corr_fft_rel(h):
+    ac_fft, ns_fft, t = auto_corr_fft(h, minus_n=False)
+    h_mean = np.mean(h)
+    return (ac_fft - h_mean**2) / (ac_fft[0] - h_mean**2), ns_fft
 
 
 
-smpl_rate = 2240
-n = np.linspace(0, 16*np.pi, smpl_rate)
-sin = np.sin(n) + np.cos(3*n)  + np.random.pareto(5, smpl_rate) * np.random.rand(smpl_rate) * 3 * (-1)**np.random.randint(0, 2, smpl_rate)
 
-po_def, f, t1 = auto_corr(sin)
-po_def_np, f, t2 = auto_corr_np(sin)
-po_fft, f, t3 = auto_corr_fft(sin)
+# smpl_rate = 2240
+# n = np.linspace(0, 16*np.pi, smpl_rate)
+# sin = np.sin(n) + np.cos(3*n)  + np.random.pareto(5, smpl_rate) * np.random.rand(smpl_rate) * 3 * (-1)**np.random.randint(0, 2, smpl_rate)
 
-fig, axes = plt.subplots(3, 1, figsize=(10, 8))
-ax1, ax2, ax3 = axes.flatten()
+# po_def, f, t1 = auto_corr(sin)
+# po_def_np, f, t2 = auto_corr_np(sin)
+# po_fft, f, t3 = auto_corr_fft(sin)
 
-ax1.plot(sin, label='signal + šum')
-ax1.legend()
-ax1.set_xlabel('$x$')
-ax1.set_ylabel('Amplituda')
-ax1.set_title('Tesni primer - kompleksno sestavljen zašumljen signal')
+# fig, axes = plt.subplots(3, 1, figsize=(10, 8))
+# ax1, ax2, ax3 = axes.flatten()
 
-ax2.plot(f, np.array(po_def), label='definicija python', alpha=1)
-ax2.plot(f, np.real(np.array(po_def_np)) + 1, label='definicija numpy', alpha=1)
-ax2.plot(f, np.real(np.array(po_fft)) + 2, label='FFT', alpha=1)
-ax2.legend()
-ax2.set_xlabel('$n$')
-ax2.set_ylabel('Amplituda + premik')
-ax2.set_title('Avtokorelacijska funkcija za testni signal')
+# ax1.plot(sin, label='signal + šum')
+# ax1.legend()
+# ax1.set_xlabel('$x$')
+# ax1.set_ylabel('Amplituda')
+# ax1.set_title('Tesni primer - kompleksno sestavljen zašumljen signal')
 
-
-ax3.plot(f, t1, label='definicija python', alpha=1)
-ax3.plot(f, t2, label='definicija numpy', alpha=1)
-ax3.plot(f, t3, label='FFT', alpha=0.5)
-ax3.legend()
-ax3.set_yscale('log')
-ax3.set_xlabel('$ n $')
-ax3.set_ylabel('Čas izračuna [s]')
-ax3.set_title('Časovna zahtevnost')
+# ax2.plot(f, np.array(po_def), label='definicija python', alpha=1)
+# ax2.plot(f, np.real(np.array(po_def_np)) + 1, label='definicija numpy', alpha=1)
+# ax2.plot(f, np.real(np.array(po_fft)) + 2, label='FFT', alpha=1)
+# ax2.legend()
+# ax2.set_xlabel('$n$')
+# ax2.set_ylabel('Amplituda + premik')
+# ax2.set_title('Avtokorelacijska funkcija za testni signal')
 
 
-plt.tight_layout()
-plt.show()
-plt.close(fig)
+# ax3.plot(f, t1, label='definicija python', alpha=1)
+# ax3.plot(f, t2, label='definicija numpy', alpha=1)
+# ax3.plot(f, t3, label='FFT', alpha=0.5)
+# ax3.legend()
+# ax3.set_yscale('log')
+# ax3.set_xlabel('$ n $')
+# ax3.set_ylabel('Čas izračuna [s]')
+# ax3.set_title('Časovna zahtevnost')
 
 
-#### sovice ####
+# plt.tight_layout()
+# plt.show()
+# plt.close(fig)
 
 
+#### sovice fft ####
+
+
+
+
+# fig = plt.figure()
+# ax = fig.add_subplot(projection='3d')
+# ax.plot([335]*10, np.linspace(-0.2, 6, 10), zs=0, zdir='z', color='black', alpha=0.75, label='335 Hz', linestyle='dashed')
+# ax.plot([375]*10, np.linspace(-0.2, 6, 10), zs=0, zdir='z', color='black', alpha=0.75, label='375 Hz', linestyle='dashdot')
+
+# yticks = np.arange(6)
+# ord = [1, 5, 0, 2, 3, 4]
+# data_s = [data[i] for i in ord]
+# sampling_s = [sampling[i] for i in ord]
+# names_s = [names[i] for i in ord]
+# for i, d in enumerate(data_s):
+#     i = len(data_s) - i - 1
+#     sample_rate = sampling_s[i]
+#     ac_fft, ac_freq = fft(data_s[i], sample_rate)
+#     ac_fft = np.abs(ac_fft)
+#     mask = (ac_freq > 0) & (ac_freq < 1000)
+#     ax.plot(ac_freq[mask], ac_fft[mask], zs=i, zdir='y', alpha=0.8, label=names_s[i])
+
+# ax.set_xlabel('Časovni zamik [s]')
+# ax.set_ylabel('Različni posnetki')
+# ax.set_zlabel('Amplituda')
+# ax.legend()
+# ax.zaxis.labelpad=-1.2 # <- change the value here
+
+# plt.xlim(0, 1000)
+# plt.title('Frekvenčni spekter signalov $h$')
+# plt.tight_layout()
+# plt.show()
+
+
+
+# fig, axes = plt.subplots(6, 1, figsize=(10, 8))
+# ax1, ax2, ax3, ax4, ax5, ax6 = axes.flatten()
+
+# ac_fft, ac_freq = fft(data[1], sampling[1])
+# ac_fft = np.abs(ac_fft)
+# mask = (ac_freq > 0) & (ac_freq < 1000)
+# ax1.plot(ac_freq[mask], ac_fft[mask], label=f'{names[1]}')
+
+# ac_fft, ac_freq = fft(data[5], sampling[5])
+# ac_fft = np.abs(ac_fft)
+# mask = (ac_freq > 0) & (ac_freq < 1000)
+# ax2.plot(ac_freq[mask], ac_fft[mask], label=f'{names[5]}')
+
+# ac_fft, ac_freq = fft(data[0], sampling[0])
+# ac_fft = np.abs(ac_fft)
+# mask = (ac_freq > 0) & (ac_freq < 1000)
+# ax3.plot(ac_freq[mask], ac_fft[mask], label=f'{names[0]}')
+
+# ac_fft, ac_freq = fft(data[2], sampling[2])
+# ac_fft = np.abs(ac_fft)
+# mask = (ac_freq > 0) & (ac_freq < 1000)
+# ax4.plot(ac_freq[mask], ac_fft[mask], label=f'{names[2]}')
+
+# ac_fft, ac_freq = fft(data[3], sampling[3])
+# ac_fft = np.abs(ac_fft)
+# mask = (ac_freq > 0) & (ac_freq < 1000)
+# ax5.plot(ac_freq[mask], ac_fft[mask], label=f'{names[3]}')
+
+# ac_fft, ac_freq = fft(data[4], sampling[4])
+# ac_fft = np.abs(ac_fft)
+# mask = (ac_freq > 0) & (ac_freq < 1000)
+# ax6.plot(ac_freq[mask], ac_fft[mask], label=f'{names[4]}')
+
+# plt.show()
+# plt.close(fig)
+
+
+#### sovice auto ####
+
+# fig = plt.figure()
+# ax = fig.add_subplot(projection='3d')
+
+# yticks = np.arange(6)
+# for i, in zip(yticks):
+#     sample_rate = sampling[i]
+#     ac_fft, ns_fft= auto_corr_fft_rel(data[i])
+#     ac_fft = np.abs(ac_fft)
+#     ax.plot(ns_fft / sample_rate, ac_fft, zs=i, zdir='y', alpha=0.8, label=names[i])
+
+# ax.set_xlabel('Časovni zamik [s]')
+# ax.set_zlabel('Amplituda')
+# ax.set_ylabel('Različni posnetki')
+# ax.legend()
+# ax.zaxis.labelpad=-0.9 # <- change the value here
+
+
+# plt.title('Relativna avtokorelacija $| \widetilde{\phi}_{hh} |$ za različne posnetke')
+# plt.tight_layout()
+# plt.show()
+
+# fig, axes = plt.subplots(6, 1, figsize=(10, 8))
+
+# for i, ax in enumerate(axes):
+#     sr = sampling[i]
+#     ac_fft, ns_fft = auto_corr_fft_rel(data[i])
+#     ac_fft = np.abs(ac_fft)
+#     ax.plot(ns_fft / sr, ac_fft, label=names[i])
+
+# plt.show()
+
+
+#### sovice ac in fft ####
 
 
 fig = plt.figure()
@@ -240,32 +352,25 @@ names_s = [names[i] for i in ord]
 for i, d in enumerate(data_s):
     i = len(data_s) - i - 1
     sample_rate = sampling_s[i]
-    ac_fft, ac_freq = fft(data_s[i], sample_rate)
+    ac_fft, ns_fft = auto_corr_fft_rel(data_s[i])
+    ac_fft, ac_freq = fft(ac_fft, sample_rate)
     ac_fft = np.abs(ac_fft)
-    mask = (ac_freq > 0) & (ac_freq < 1000)
-    ax.plot(ac_freq[mask], ac_fft[mask], zs=i, zdir='y', alpha=0.8, label=names_s[i])
+    #plt.plot( alpha=0.8, label=names[i])
+    mask = (ac_freq > 250) & (ac_freq < 500)
+
+    ax.plot(ac_freq[mask], ac_fft[mask], zs=i, zdir='y', alpha=1, label=names_s[i])
+    ax.set_xlim(250, 500)
 
 ax.set_xlabel('Časovni zamik [s]')
 ax.set_ylabel('Različni posnetki')
-ax.set_zlabel('Amplituda')
 ax.legend()
-ax.zaxis.labelpad=-1.2 # <- change the value here
+ax.zaxis.labelpad=-0.9 # <- change the value here
 
-plt.xlim(0, 1000)
-plt.title('Frekvenčni spekter signalov $h$')
+plt.xlim(250, 500)
+plt.title('Frekvenčni spekter $| \widetilde{\phi}_{hh} |$, 1x autokorelirano')
 plt.tight_layout()
 plt.show()
 
 
-
 fig, axes = plt.subplots(6, 1, figsize=(10, 8))
-ax1, ax2, ax3, ax4, ax5, ax6 = axes.flatten()
-
-ac_fft, ac_freq = fft(data[1], sampling[1])
-ac_fft = np.abs(ac_fft)
-mask = (ac_freq > 0) & (ac_freq < 1000)
-ax1.plot(ac_freq[mask], ac_fft[mask], label=f'{names[1]}')
-
-plt.show()
-
 
