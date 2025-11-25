@@ -200,7 +200,7 @@ pub fn rk45(t: Vec<f64>, y0: f64, yz: f64, k: f64, extra: bool, a: f64, d: f64) 
 }
 
 
-#[pyfunction(signature = (ts, te, y0, yz =-5.0, k=0.1, extra=false, a=1.0, d=10.0, tol=0.1, hmax=0.1, hmin=1e-14))]
+#[pyfunction(signature = (ts, te, y0, yz =-5.0, k=0.1, extra=false, a=1.0, d=10.0, tol=0.1, hmax=1.0, hmin=1e-14))]
 pub fn rkf(ts: f64, te: f64, y0: f64, yz: f64, k: f64, extra: bool, a: f64, d: f64, tol: f64, hmax:f64, hmin:f64) -> PyResult<(Vec<f64>, Vec<f64>)> {
     let mut out: Vec<f64> = vec![y0];
     let mut t: Vec<f64> = vec![ts];
