@@ -2,6 +2,7 @@ use pyo3::prelude::*;
 mod fn03;
 mod fn04;
 mod fn05;
+mod fn06;
 mod wav;
 
 use crate::fn03::{
@@ -15,6 +16,10 @@ use crate::fn04::{
 
 use crate::fn05::{
     fft
+};
+
+use crate::fn06::{
+    euler, analyt, heun, rk2a, rku4, rk45, rkf, pc4
 };
 
 use crate::wav::branje;
@@ -42,5 +47,13 @@ fn rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(branje, m)?)?;
     m.add_function(wrap_pyfunction!(filter, m)?)?;
     m.add_function(wrap_pyfunction!(fft, m)?)?;
+    m.add_function(wrap_pyfunction!(euler, m)?)?;
+    m.add_function(wrap_pyfunction!(analyt, m)?)?;
+    m.add_function(wrap_pyfunction!(heun, m)?)?;
+    m.add_function(wrap_pyfunction!(rk2a, m)?)?;
+    m.add_function(wrap_pyfunction!(rku4, m)?)?;
+    m.add_function(wrap_pyfunction!(rk45, m)?)?;
+    m.add_function(wrap_pyfunction!(rkf, m)?)?;
+    m.add_function(wrap_pyfunction!(pc4, m)?)?;
     Ok(())
 }
