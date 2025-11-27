@@ -1,0 +1,340 @@
+\documentclass[slovene,11pt,a4paper]{article}
+\usepackage[margin=2cm,bottom=3cm,foot=1.5cm]{geometry}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5ex}
+
+\usepackage[pdftex]{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png}
+
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage[usenames]{color}
+\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{siunitx}
+\usepackage{hyperref}
+\usepackage{float}
+
+% \def\phi{\varphi}
+\def\eps{\varepsilon}
+\def\theta{\vartheta}
+
+\newcommand{\thisyear}{2025/26}
+
+\renewcommand{\Re}{\mathop{\rm Re}\nolimits}
+\renewcommand{\Im}{\mathop{\rm Im}\nolimits}
+\newcommand{\Tr}{\mathop{\rm Tr}\nolimits}
+\newcommand{\diag}{\mathop{\rm diag}\nolimits}
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\ddd}{\mathrm{d}}
+\newcommand{\ii}{\mathrm{i}}
+\newcommand{\lag}{\mathcal{L}\!}
+\newcommand{\ham}{\mathcal{H}\!}
+\newcommand{\four}[1]{\mathcal{F}\!\left(#1\right)}
+\newcommand{\bigO}[1]{\mathcal{O}\!\left(#1\right)}
+\newcommand{\sh}{\mathop{\rm sinh}\nolimits}
+\newcommand{\ch}{\mathop{\rm cosh}\nolimits}
+\renewcommand{\th}{\mathop{\rm tanh}\nolimits}
+\newcommand{\erf}{\mathop{\rm erf}\nolimits}
+\newcommand{\erfc}{\mathop{\rm erfc}\nolimits}
+\newcommand{\sinc}{\mathop{\rm sinc}\nolimits}
+\newcommand{\rect}{\mathop{\rm rect}\nolimits}
+\newcommand{\ee}[1]{\cdot 10^{#1}}
+\newcommand{\inv}[1]{\left(#1\right)^{-1}}
+\newcommand{\invf}[1]{\frac{1}{#1}}
+\newcommand{\sqr}[1]{\left(#1\right)^2}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\thalf}{\tfrac{1}{2}}
+\newcommand{\pd}{\partial}
+\newcommand{\Dd}[3][{}]{\frac{\ddd^{#1} #2}{\ddd #3^{#1}}}
+\newcommand{\Pd}[3][{}]{\frac{\pd^{#1} #2}{\pd #3^{#1}}}
+\newcommand{\avg}[1]{\left\langle#1\right\rangle}
+\newcommand{\norm}[1]{\left\Vert #1 \right\Vert}
+\newcommand{\braket}[2]{\left\langle #1 \vert#2 \right\rangle}
+\newcommand{\obraket}[3]{\left\langle #1 \vert #2 \vert #3 \right \rangle}
+\newcommand{\hex}[1]{\texttt{0x#1}}
+
+\renewcommand{\iint}{\mathop{\int\mkern-13mu\int}}
+\renewcommand{\iiint}{\mathop{\int\mkern-13mu\int\mkern-13mu\int}}
+\newcommand{\oiint}{\mathop{{\int\mkern-15mu\int}\mkern-21mu\raisebox{0.3ex}{$\bigcirc$}}}
+
+\newcommand{\wunderbrace}[2]{\vphantom{#1}\smash{\underbrace{#1}_{#2}}}
+
+\renewcommand{\vec}[1]{\overset{\smash{\hbox{\raise -0.42ex\hbox{$\scriptscriptstyle\rightharpoonup$}}}}{#1}}
+\newcommand{\bec}[1]{\mathbf{#1}}
+
+\title{
+\sc\large Matematično-fizikalni praktikum \thisyear\\
+\bigskip
+\bf\Large 6.~naloga: Enačbe hoda
+}
+\author{Samo Krejan, 28231092}
+\date{}
+
+\begin{document}
+\maketitle
+
+Za opis najpreprostejših fizikalnih procesov uporabljamo
+navadne diferencialne enačbe, ki povezujejo vrednosti
+spremenljivk sistema z njihovimi časovnimi
+spremembami. Tak primer je na primer enačba za časovno
+odvisnost temperature v stanovanju, ki je obdano s stenami
+z neko toplotno prevodnostjo in določeno zunanjo temperaturo.
+V najpreprostejšem primeru ima enačba obliko
+\begin{equation}
+\Dd{T}{t} = - k \left( T-T_\mathrm{zun} \right)
+\label{cooling}
+\end{equation}
+z analitično rešitvijo
+\begin{equation*}
+T(t) = T_\mathrm{zun} + \mathrm{e}^{-kt} \left( T(0) - T_\mathrm{zun} \right) \>.
+\end{equation*}
+Enačbam, ki opisujejo razvoj spremenljivk sistema $y$ po času ali drugi
+neodvisni spremenljivki $x$, pravimo {\sl enačbe hoda\/}.  Pri tej
+nalogi bomo proučili uporabnost različnih numeričnih metod
+za reševanje enačbe hoda oblike $\ddd y/\ddd x = f(x, y)$,
+kot na primer~(\ref{cooling}).   Najbolj groba
+prva inačica, tako imenovana osnovna Eulerjeva metoda,
+je le prepisana aproksimacija za prvi odvod
+$y' \approx (y(x+h) - y(x)) / h$, torej
+\begin{equation}
+y(x+h) = y(x) + h\,\left.\Dd{y}{x}\right|_x \>.
+\label{euler}
+\end{equation}
+Diferencialno enačbo smo prepisali
+v diferenčno: sistem
+spremljamo v ekvidistantnih korakih dolžine $h$. Metoda je
+večinoma stabilna, le groba: za večjo natančnost moramo
+ustrezno zmanjšati korak.   Za red boljša (${\cal O}\,(h^3 )$ , t.j. lokalna natančnost drugega reda)
+je simetrizirana Eulerjeva (ali sredinska) formula, ki sledi
+iz simetriziranega približka za prvi odvod,
+$y' \approx (y(x+h) - y(x-h)) / 2h$.  Računamo po shemi
+\begin{equation}
+y(x+h) = y(x-h) + 2h\,\left.\Dd{y}{x}\right|_x \>,
+\label{seuler}
+\end{equation}
+ki pa je praviloma nestabilna.  Želeli bi si
+pravzaprav nekaj takega
+\begin{equation}
+y(x+h) = y(x) + {h\over 2}\,\left[\left.\Dd{y}{x}\right|_x
++ \left.\Dd{y}{x}\right|_{x+h} \right] \>,
+\label{impeuler}
+\end{equation}
+le da to pot ne poznamo odvoda v končni točki intervala
+(shema je implicitna). Pomagamo si lahko z iteracijo.
+Zapi\v simo odvod kot:
+$$ \left.{dy \over dx}\right|_x = f(x,y) $$ ter $$ x_{n+1} = x_n + h,
+~~~ y_n = y(x_n)$$
+Heunova metoda (${\cal O}\,(h^3 )$ lokalno) je pribli\v zek idealne formule z:
+\begin{eqnarray}
+\hat{y}_{n+1} & =  & y_n +  h \cdot f(x_n,y_n) \\
+y_{n+1} & = & y_n + \frac{h}{2} \left[ f(x_n,y_n) + f(x_{n+1},\hat{y}_{n+1})\right]
+\end{eqnarray}
+Izvedenka tega je nato Midpoint metoda  (tudi ${\cal O}\,(h^3 )$ lokalno):
+\begin{eqnarray}
+k_1 & = & f(x_n,y_n) \\
+k_2 & = & f(x_n+{1 \over 2}h,y_n+{1 \over 2}\, h\,k_1) \\
+y_{n+1} & = & y_n + h\,k_2
+\end{eqnarray}
+Le-to lahko potem izbolj\v samo kot modificirano Midpoint metodo
+itd\ldots
+
+V praksi zahtevamo natančnost in numerično učinkovitost,
+ki sta neprimerno boljši kot pri opisanih preprostih metodah.
+Uporabimo metode, zasnovane na algoritmih prediktor-korektor,
+metode višjih redov iz družine Runge-Kutta (z adaptivnimi koraki), ali ekstrapolacijske metode.
+Brez dvoma ena najbolj priljubljenih je metoda RK4,
+\begin{align}
+k_1 & =
+  f\left(x,\,{y}(x)\right) \> {,}\nonumber\\
+k_2 & =
+  f\left(x+{\textstyle{1\over 2}}h,\,
+       {y}(x)+{\textstyle{h\over 2}}k_1\right) \> {,}\nonumber\\
+k_3 & =
+  f\left(x+{\textstyle{1\over 2}}h,\,
+       {y}(x)+{\textstyle{h\over 2}}k_2\right) \> {,}\label{eq:rk4}\\
+k_4 & =  f\left(x+h,\,{y}(x)+hk_3\right) \> {,}\nonumber\\
+{y}(x+h) & =  {y}(x)
+  + {\tfrac{h}{6}}\,\left(k_1 + 2k_2 + 2k_3 + k_4\right) + {\cal O}(h^5)
+  \nonumber\> {.}
+\end{align}
+
+
+\section{Naloga}
+
+Preizkusi preprosto Eulerjevo metodo ter nato še čim več 
+naprednejših metod( Midpoint, Runge-Kutto 4. reda, Adams-Bashfort-Moultonov prediktor-korektor \ldots ) na primeru
+z začetnima temperaturama $y(0)=21$ ali $y(0)=-15$,
+zunanjo temperaturo $y_\mathrm{zun}=-5$ in parametrom $k=0.1$.
+Kako velik (ali majhen) korak $h$ je potreben?
+Izberi metodo (in korak) za izračun družine rešitev
+pri različnih vrednostih parametra $k$.
+
+
+\subsection{Eulerjeva metoda}
+
+Naloge sem se lotil tako, da sem najprej najbolj preprosto izmed metod - Eulerjevo metodo, implementiral v Rust jeziku in se nato lotil analize uspešnosti metode. Metoda je seveda bolša, tem manjši $h$ (kot definiran v uvodu) vzamemo. Za občutek, kako majhnega je res treba vzeti, sem najprej zgrafiral rešitve naše enačbe za različne $h$ in tudi analitično rešitev - glej sliko \ref{basic}
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=8.5cm]{graphs/euly.pdf}
+    \caption{Osnovna Eulerjeva metoda za različno dolge korake}
+    \label{basic}
+\end{center}
+\end{figure}
+
+Hitro vidimo, da se rešitev enačbe s 6 minutnim korakom na oko že odlično sklada z analitično rešitev. Ker imamo to srečo, da imamo na voljo analitično rešitev problema, lahko grafiramo tudi napako metode pri različnih korakih - glej sliko \ref{basic err}
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/euly_err.pdf}
+    \caption{Absolutna napaka Eulerjeve metode za različno dolge korake, opazimo da metoda za 20 urni korak ni stabilna, in se napaka metode čez čas le nabira in veča}
+    \label{basic err}
+\end{center}
+\end{figure}
+
+\subsection{Ostale metode}
+
+Za dokaj preprosto implementacijo eulerjeve metode sem se lotil implementacije tudi drugih metod. Tu sem si močno pomagal z že narejeno implementacijo metod v Pythonu, ki je objavljena v spletni učilnico. Pravzaprav sem jo le prepisal v Rust in preuredil v željeno obliko. Najprej sem se na hitro prepričal, da so metode delovale pravilno, nato pa sem se lotil raziskovanja, katera je najbolj natančna v odvisnosti od dolžine koraka. Vsako izmed metod sem uporabil na enakem časovnem intervalu in nato iskal največjo razliko med metodo in analitično rešitvijo. Na ta način sem dobil graf \ref{err}
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=9.1cm]{graphs/errs.pdf}
+    \caption{Maksimalno odstopanje različnih metod v odvisnosti od koraka}
+    \label{err}
+\end{center}
+\end{figure}
+
+Vidimo, da sta daleč najnatančnejši metodi Runge-Kutta 4. reda (rku4) in Adams - Bashfort - Moultonov prediktor-korektor (pc4), ki oba že pri koraku dolžine $10^{-2}h$ dosegata tevretične limite natančnosti. Runge-Kutta se izkaže celo za malo bolj natančno. Heunova metoda pa po natančnosti zadeva ravno nekje vmes med omenjenima metodama in med najosnovnejšo Eulerjevo metodo. Runge-Kutta 2. reda nisem narisal, saj se je njena natančnost na danem intervalu skoraj popolnoma skladala z Eulerjevo.
+
+Na tej točki sem se seveda osredotočil zgolj na sorazmerno majhne korake, a seveda veliko o uspešnosti metode pove tudi, kakšen je največji korak, pri katerem je metoda še stabilna. S tem namenom je nastal graf \ref{err unstable}
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=9cm]{graphs/errs_unstable.pdf}
+    \caption{Maksimalno odstopanje različnih metod v odvisnosti od koraka. Na prelomih krivulj pride do meje med stabilno in nestabilno metodo. Vidimo, da je v tem smislu najstabilnejša metoda Runge-Kutta 4. reda, medtem ko me je Eulerjeva metoda pozitivno presenetila s svojo stabilnostjo. Opazimo tudi zanimivo obliko na grafu pc4, ki je ne znam pojasniti}
+    \label{err unstable}
+\end{center}
+\end{figure}
+
+
+Seveda pa metoda ni dobra, če porabi izračun veliko časa. Tako sem se odločil narisati tudi koliko časa porabi določena metoda (slika \ref{time}), kjer sem meril čas, kot povprečje izvedbe metode 100 krat, kar je kar močno segrelo moj računalnik.
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=8.7cm]{graphs/times.pdf}
+    \caption{Čas izvedbe metod v odvisnosti od dolžine koraka}
+    \label{time}
+\end{center}
+\end{figure}
+
+Po pričakovanjih so seveda preprostejše metode hitrejše pri enaki dolžini koraka, a v splošnem sem preveril da (približno) velja, da metoda rku4 doseže enako natančnost v manjšem času, tako da izmed naštetih metod, mislim da rku4 "zmaga" na vseh področjih, je najnatančnejša in pri poljubni natančnosti tudi najhitrejša.
+
+
+\subsubsection{Runge-Kutta-Fehlbergova metoda,}
+
+je metoda za katero se mi je zdelo primerno porabiti še nekaj dodatnega časa, saj deluje po nekoliko drugačnem principu kot ostale. Namreč, namesto da ročno nastavimo dolžino koraka, se ta avtomatično prilagaja tako, da doseže željeno natančnost. Prvo vprašanje, ki se mi je porodilo je bilo seveda, če to dela pravilno. Tako sem na enak način kot v prejšnem poglavju meril natančnost, a tokrat v odvisnosti od nastavljene natančnosti. Tako sem dobil graf \ref{rkferr}
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/rkferr.pdf}
+    \caption{Dejanska natančnost v odvisnosti od nastavljene / željene natančnosti.}
+    \label{rkferr}
+\end{center}
+\end{figure}
+
+Vidimo, da je dejanska natančnost nekoliko slabša od nastavljene, a se giblje v  željenem velikostnem redu. Opazimo tudi, da se na neki točki natančnost ne slabša več, razlog za čemer pa je ta, da ima metoda nastavljen maksimalno dolžino koraka, in ko zahtevana natančnost ne zahteva več manjših korakov, RKF metoda postane pravzaprav rku4.
+
+Kot prej nas seveda zanima tudi časovna zahtevnost metode, ki sem jo prikazal na grafu \ref{rkft}. Izkaže se, da metoda ni le natančna temveč tudi hitra, kar je smiselno, saj dinamično prilagaja natančnost, s čimer poskrbi, da ne porabi časa na nepotrebnih mestih.
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/rkft.pdf}
+    \caption{Časovna zahtevnost RKF}
+    \label{rkft}
+\end{center}
+\end{figure}
+
+\subsection{Družina rešitev}
+
+Ko sem se končno prepričal, da mi je najbolj všeč RKF metoda sem z njo izračunal družino rešitev našega problema pri različnih vrednostih parametra $k$. Dobljeno sem prikazal na grafih \ref{druzina} in \ref{druzina 2}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/druzina.pdf}
+        \caption{Rešitve problema za različne vrednosti parametra $k$ pri začetni temperaturi $21 ^\circ C$}
+        \label{druzina}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/druzina2.pdf}
+        \caption{Rešitve problema za različne vrednosti parametra $k$ pri začetni temperaturi $-15 ^\circ C$}
+        \label{druzina 2}
+    \end{minipage}
+    % \label{druzina}
+\end{figure}
+
+
+
+\section{Dodatna naloga}
+
+Temperatura prostora se lahko še
+dodatno spreminja zaradi denimo sončevega segrevanja
+skozi okna, s $24$-urno periodo in nekim faznim zamikom $\delta$,
+kar opišemo z dva- ali triparametrično enačbo
+\begin{equation}
+\Dd{T}{t} = - k \left( T-T_\mathrm{zun} \right)
++ A\sin\left( {2\pi\over 24}(t-\delta) \right) \>.
+\label{cooling2}
+\end{equation}
+Poišči še družino rešitev te enačbe pri
+$k=0.1$ in $\delta=10$!  Začni z $A=1$, kasneje spreminjaj tudi
+to vrednost.  V premislek: kakšno metodo bi uporabil, če bi posebej
+natančno želel določiti maksimalne temperature in trenutke,
+ko nastopijo?
+
+
+\subsection{Družine rešitev}
+
+Za določanje maksimumov temperatur, mislim da se najbolj splača uporabiti prav RKF metodo, ki okoli točk z visokimi drugimi odvodi (torej v našem primeru prav okoli maksimumov) prilagodi interval, tako da je le ta na teh točkah krajši. S tem v mislih, sem tako izbral prav to metodo, za iskanje družine rešitev našega dodatno zakompliciranega problema. Po vrsti sem najprej spreminjal parameter $k$ nato pa še $a$ in $d$, medtem ko sem vse ostale parametre držal konstantne. Na ta način sem dobil slike \ref{exk}, \ref{exa} in \ref{exd}. Mislim, da se na grafu opazi marsikatero lastnost, ki je z nekaj fizikalnega razmisleka lahko pojasnljiva.
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/exstra_k.pdf}
+    \caption{Temperatura skozi čas}
+    \label{exk}
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/exstra_a.pdf}
+    \caption{Temperatura skozi čas}
+    \label{exa}
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/exstra_d.pdf}
+    \caption{Temperatura skozi čas}
+    \label{exd}
+\end{center}
+\end{figure}
+
+
+\section{Zaključek}
+
+Rokovanje z različnimi metodami reševanja diferencialnih enačb se je izkazala za presenetljivo prijetno izkušnjo. Sicer sem o numeričnih metodah reševanja diferencialnih enačb nekaj vedel že od lani, so bile nekatere metode zame nove in so tako ponudile novo navdušenje nad programiranjem. 
+
+Poleg novih metod pa sem se tekom naloge spoprijel tudi z drugimi izivi. Najprej mi je mnogo časa vzela bolezen, ki je efektivno uničila možnost dela čez vikend, tako da sem moral z delom nekoliko hiteti (verjetno se pozna v času oddaje). Poleg tega pa sem se končno odločil uporabiti Jupitrov zvezek namesto preprostega Python dokumenta, kar je omogočilo precej bolj prijetno delo s kodo a je s seboj seveda prineslo nekaj preglavic učenja novega orodja. 
+
+Vseskupaj mislim, da je bilo reševanje uspešno tako iz perspektive novih znanj, kot tudi v kvaliteti končnega izdelka. Upam, da se bo bralec strinjal s tem :)
+
+
+\end{document}

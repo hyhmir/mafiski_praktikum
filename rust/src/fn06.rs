@@ -8,7 +8,7 @@ fn f(y: f64, k: f64, yz: f64) -> f64 {
 }
 
 fn f_ext(t: f64, y: f64, k: f64, yz: f64, a: f64, d: f64) -> f64 {
-    -k*(y - yz) + a*(2.0*PI/24.0 * (t - d))
+    -k*(y - yz) + a*((2.0*PI/24.0) * (t - d)).sin()
 }
 
 fn analy(t: f64, y0: f64, k: f64, yz: f64) -> f64 {
