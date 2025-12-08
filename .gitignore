@@ -12,3 +12,4 @@
 test.py
 /03/test.py
 /target
+*/__pycache__
