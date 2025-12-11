@@ -174,13 +174,66 @@ Na slikah  lahko opazimo dve zanimivi - povezani stvari, na levi vidimo, da se n
 
 Kot omenjeno je nihajni čas odvisen od začetne lege, kar sem preveril tako z analitično rešitvijo kot tudi z Verlet metodo in rezultate prikazal na sliki \ref{viju}
 
-\begin{figure}[ht]
+\begin{figure}[H]
 \begin{center}
     \includegraphics[width=10cm]{graphs/t0.pdf}
     \caption{Nihajni čas v odvisnosti od začetnega kota}
     \label{viju}
 \end{center}
 \end{figure}
+
+\subsection{Primerjava metod}
+
+Ko sem spoznal rešitve našega problema, sem se lotil raziskovanja uspešnosti različnih metod. Ker sem imel še iz prejšnje naloge že veliko narejenega, se mi je zdela implementacija preveč trivialna, da bi bila zanimiva - tako sem le uporabil implementacije metod pripete v spletni učilnici.
+
+Kvaliteta metode je seveda odvisna od tega, kakšno natančnost doseže v kakšnem času. Tako sem za različne metode narisal grafe maksimalnega odstopanja od analitične rešitve v prvih 15 sekundah v odvisnosti od časa, ter graf potrebnega časa v odvisnosti od dolžine koraka. Rezultati so vidni na sliki \ref{double}
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=0.8\linewidth]{graphs/double.pdf}
+    \caption{Graf maksimalnega odstopanja od analitične rešitve v prvih 15 sekundah v odvisnosti od časa, ter graf potrebnega časa v odvisnosti od dolžine koraka}
+    \label{double}
+\end{center}
+\end{figure}
+
+Kot smo spoznali pri predavanjih, je glavni problem ne-simplektičnih metod ta, da se dlje časa kot simulacija traja - bolj se "kvarijo", zato sem si v naslednjem koraku pogledal, kako se za različne metode spreminja odstopanje amplitude od analitičnih predvidevanj. Za korak sem pri vseh metodah vzel $0.01$. Na ta način sem dobil graf \ref{triple}
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=12cm]{graphs/triple1.pdf}
+    \caption{"Kvarjenje" amplitude skozi čas, oziroma skozi število nihajev. Lepo se vidi, da se pri obeh simplektičnih metodah amplituda čez čas "popravlja" medtem, ko se pri ostalih metodah čez čas le kvari. Pri eulerjevi metodi celo toliko, da po približno 40 nihajih ni bilo več mogoče razločiti, kje naj bi bili maksimumi (potrebno za odčitanje amplitude).}
+    \label{triple}
+\end{center}
+\end{figure}
+
+Kot omenjeno v uvodu pa so simplektične metode tako uspešne, ker v teoriji ohranjajo energijo sistema. To se seveda želel v naslednjem koraku preveriti, zato sem grafiral še absolutno razliko med energijo izračunano preko posamezne metode in zqčetno energijo. Na ta način sem dobil grafa na sliki \ref{triple2}, ki potrdi pričakovano. Zanimivo sicer opazimo majhno nihanje energije pri simplektičnih metodah, a pomembneje opazimo, da se odstopanje ustali pri neki natančnosti (ki je odvisna od izbire dolžine koraka), medtem, ko se energija pri ostalih metodah "kvari"\ skozi čas.
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=.8\linewidth]{graphs/triple.pdf}
+    \caption{Absolutno odstopanje od zažetne energije sistema čez 3000 sekund (zgoraj) in samo čez 50 sekund (spodaj)}
+    \label{triple2}
+\end{center}
+\end{figure}
+
+Ko sem opazoval na kakšen način se energija dejansko kvari, sem odkril, da ne-simplektične metode delujejo, kot da bi imeli dušeno nihanje - amplitude se čez čas manjšajo, in prav tako energija sistema. Najbolj elegantno se mi je zdelo to ponazoriti z faznim portretom izračunanim s simplektično metodo (Verlet) in ne-simplektično (Runge-Kutta 4. reda). Medtem, ko simplektična ostane na originalni orbiti, ne-simplektična teži proti ravnovesni legi. Fazni portret je prikazan na sliki \ref{phase}, a efekt je še bolje viden na animaciji, ki je priložena poročilu.
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=12cm]{graphs/single.pdf}
+    \caption{Fazni portret pridobljen z simplektično metodo (Verlet) in ne-simplektično metodo (RKU4). Opazujemo, kako ne-simplektična metoda teži proti ravnovesni legi, medtem ko simplektična ohranja orbito (energijo)}
+    \label{phase}
+\end{center}
+\end{figure}
+
+\section{Zaključek}
+
+Naučiti se o simplektičnih metodah se mi je zdelo zelo zanimivo, čeprav smo o njih slišali že pri Mafiji 1 in Numeričnih metodah. Tokrat je bilo zame prvič, da sem jih uporabil in izkusil njihovo uporabnost.
+
+Kljub temu, pa me naloga ni najbolj navdihnila, saj se mi je zdela bolj kot samo nadeljevanje prejšnje naloge. Tu moram sicer priznati, da si zaradi različnih okoliščin nisem mogel vzeti časa za dodatno (in dodatno dodatno) nalogo, ki bi mi verjetno precej bolj popestrila življenje.
+
+Vseeno se mi zdi, da sem nalogo opravil uspešno in vesel sem, da sem spoznal še eno orodje, ki mi zna priti prav v karieri fizika.
+
 
 
 \end{document}
