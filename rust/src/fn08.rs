@@ -16,6 +16,11 @@ fn naloga(y: [f64; 2], e: f64) -> [f64; 2] {
     [y[1], -e * y[0]]
 }
 
+#[pyfunction]
+pub fn schrodinger(y: [f64; 2], e: f64) -> [f64; 2] {
+    naloga(y, e)
+}
+
 fn rk4<F>(f: F, y0: [f64; 2], t: &Vec<f64>) -> Vec<[f64; 2]>
 where
     F: Fn([f64; 2], f64) -> [f64; 2],
@@ -212,4 +217,32 @@ pub fn shooter(a: f64, b: f64, z1: f64, z2: f64, t: Vec<f64>, tol: f64, e:f64, d
     else {
         Ok(shoot_valval(&f, a, b, z1, z2, t, tol))
     }
+}
+
+
+#[pyfunction]
+pub fn sch_rk4(e: f64, y0: [f64; 2], t: Vec<f64>) -> Vec<[f64; 2]> {
+    let f = |y: [f64; 2], _t: f64| -> [f64; 2] {
+        naloga(y, e)
+    };
+    let mut out: Vec<[f64; 2]> = vec![y0; t.len()];
+    let mut h;
+    let mut k1;
+    let mut k2;
+    let mut k3;
+    let mut k4;
+    for i in 0..(t.len() - 1) {
+        h = t[i+1] - t[i];
+        k1 = f(out[i], t[i]);
+        k1 = [h * k1[0], h * k1[1]];
+        k2 = f([out[i][0] + 0.5 * k1[0], out[i][1] + 0.5 * k1[1]], t[i] + 0.5 * h);
+        k2 = [h * k2[0], h * k2[1]];
+        k3 = f([out[i][0] + 0.5 * k2[0], out[i][1] + 0.5 * k2[1]], t[i] + 0.5 * h);
+        k3 = [h * k3[0], h * k3[1]];
+        k4 = f([out[i][0] + k3[0], out[i][1] + k3[1]], t[i+1]);
+        k4 = [h * k4[0], h * k4[1]];
+        out[i+1] = [out[i][0] + ( k1[0] + 2.0 * ( k2[0] + k3[0] ) + k4[0] ) / 6.0, out[i][1] + ( k1[1] + 2.0 * ( k2[1] + k3[1] ) + k4[1] ) / 6.0];
+        // println!("{:?}",out)
+    }
+    out
 }
