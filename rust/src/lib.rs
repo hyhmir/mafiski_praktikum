@@ -3,6 +3,7 @@ mod fn03;
 mod fn04;
 mod fn05;
 mod fn06;
+mod fn08;
 mod wav;
 
 use crate::fn03::{
@@ -21,6 +22,8 @@ use crate::fn05::{
 use crate::fn06::{
     euler, analyt, heun, rk2a, rku4, rk45, rkf, pc4
 };
+
+use crate::fn08::{shooter};
 
 use crate::wav::branje;
 
@@ -55,5 +58,6 @@ fn rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(rk45, m)?)?;
     m.add_function(wrap_pyfunction!(rkf, m)?)?;
     m.add_function(wrap_pyfunction!(pc4, m)?)?;
+    m.add_function(wrap_pyfunction!(shooter, m)?)?;
     Ok(())
 }
