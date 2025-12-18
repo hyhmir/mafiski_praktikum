@@ -189,13 +189,17 @@ def fd( u, v, w, t, a, b ):
     if type( v ) == int or type( v ) == float:
         v = numpy.array( [ float( v ) ] * n )
 
-    if type( w ) == int or type( w ) == float:
+    if type( w ) == int or type( w ) == float :
         w = numpy.array( [ float( w ) ] * n )
+
+    w = numpy.array(w)
+    v = numpy.array(v)
+    u = numpy.array(u)
 
     # Compute the stepsize.  It is assumed that all elements in t are
     # equally spaced.
 
-    h = t[1] - t[0];
+    h = t[1] - t[0]
 
     # Construct tridiagonal system; boundary conditions appear as first and
     # last equations in system.

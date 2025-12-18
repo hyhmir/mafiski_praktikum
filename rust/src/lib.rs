@@ -23,7 +23,7 @@ use crate::fn06::{
     euler, analyt, heun, rk2a, rku4, rk45, rkf, pc4
 };
 
-use crate::fn08::{shooter, schrodinger, sch_rk4};
+use crate::fn08::{shooter, schrodinger, sch_rk4, fd, fdd, ffd};
 
 use crate::wav::branje;
 
@@ -61,5 +61,8 @@ fn rust(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(shooter, m)?)?;
     m.add_function(wrap_pyfunction!(schrodinger, m)?)?;
     m.add_function(wrap_pyfunction!(sch_rk4, m)?)?;
+    m.add_function(wrap_pyfunction!(fd, m)?)?;
+    m.add_function(wrap_pyfunction!(fdd, m)?)?;
+    m.add_function(wrap_pyfunction!(ffd, m)?)?;
     Ok(())
 }
