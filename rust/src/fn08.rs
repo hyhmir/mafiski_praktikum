@@ -16,6 +16,15 @@ fn naloga(y: [f64; 2], e: f64) -> [f64; 2] {
     [y[1], -e * y[0]]
 }
 
+fn nalogica(y: [f64; 2], e: f64, t: f64) -> [f64; 2] {
+    if t < 0.0 || t > 1.0 {
+        [y[1], -(e - 100.0) * y[0]]
+    }
+    else {
+        [y[1], -e * y[0]]
+    }
+}
+
 #[pyfunction]
 pub fn schrodinger(y: [f64; 2], e: f64) -> [f64; 2] {
     naloga(y, e)
@@ -42,7 +51,7 @@ where
         k4 = f([out[i][0] + k3[0], out[i][1] + k3[1]], t[i+1]);
         k4 = [h * k4[0], h * k4[1]];
         out[i+1] = [out[i][0] + ( k1[0] + 2.0 * ( k2[0] + k3[0] ) + k4[0] ) / 6.0, out[i][1] + ( k1[1] + 2.0 * ( k2[1] + k3[1] ) + k4[1] ) / 6.0];
-        // println!("{:?}",out)
+        // // println!("{:?}",out)
     }
     out
 }
@@ -60,12 +69,12 @@ where
     let mut zz1 = z1;
     let mut zz2 = z2;
 
-    println!("{:2}: z = {:10.3e}, error = {:10.3e}", 0, zz1, b - w1);
+    // // println!("{:2}: z = {:10.3e}, error = {:10.3e}", 0, zz1, b - w1);
 
     for i in 0..max_iter {
         y = rk4(f, [a, zz2], &t);
         w2 = y[n-1][0];
-        println!("{:2}: z = {:10.3e}, error = {:10.3e}", i+1, zz1, b - w2);
+        // println!("{:2}: z = {:10.3e}, error = {:10.3e}", i+1, zz1, b - w2);
 
         if (b - w2).abs() < tol {
             break;
@@ -76,8 +85,8 @@ where
     }
 
     if (b - w2).abs() >= tol {
-        println!("Maximum iter num {} exceeded", max_iter);
-        println!("error estimate is {:10.3e}", (b - w2));
+        // println!("Maximum iter num {} exceeded", max_iter);
+        // println!("error estimate is {:10.3e}", (b - w2));
         //return Err("Napakaaaaaaaaaa!!!!".into());
     }
     
@@ -98,12 +107,12 @@ where
     let mut zz1 = z1;
     let mut zz2 = z2;
 
-    println!("{:2}: z = {:10.3e}, error = {:10.3e}", 0, zz1, b - w1);
+    // println!("{:2}: z = {:10.3e}, error = {:10.3e}", 0, zz1, b - w1);
 
     for i in 0..max_iter {
         y = rk4(f, [a, zz2], &t);
         w2 = y[n-1][1];
-        println!("{:2}: z = {:10.3e}, error = {:10.3e}", i+1, zz1, b - w2);
+        // println!("{:2}: z = {:10.3e}, error = {:10.3e}", i+1, zz1, b - w2);
 
         if (b - w2).abs() < tol {
             break;
@@ -114,8 +123,8 @@ where
     }
 
     if (b - w2).abs() >= tol {
-        println!("Maximum iter num {} exceeded", max_iter);
-        println!("error estimate is {:10.3e}", (b - w2));
+        // println!("Maximum iter num {} exceeded", max_iter);
+        // println!("error estimate is {:10.3e}", (b - w2));
         //return Err("Napakaaaaaaaaaa!!!!".into());
     }
     
@@ -136,12 +145,12 @@ where
     let mut zz1 = z1;
     let mut zz2 = z2;
 
-    println!("{:2}: z = {:10.3e}, error = {:10.3e}", 0, zz1, b - w1);
+    // println!("{:2}: z = {:10.3e}, error = {:10.3e}", 0, zz1, b - w1);
 
     for i in 0..max_iter {
         y = rk4(f, [zz2, a], &t);
         w2 = y[n-1][0];
-        println!("{:2}: z = {:10.3e}, error = {:10.3e}", i+1, zz1, b - w2);
+        // println!("{:2}: z = {:10.3e}, error = {:10.3e}", i+1, zz1, b - w2);
 
         if (b - w2).abs() < tol {
             break;
@@ -152,8 +161,8 @@ where
     }
 
     if (b - w2).abs() >= tol {
-        println!("Maximum iter num {} exceeded", max_iter);
-        println!("error estimate is {:10.3e}", (b - w2));
+        // println!("Maximum iter num {} exceeded", max_iter);
+        // println!("error estimate is {:10.3e}", (b - w2));
         //return Err("Napakaaaaaaaaaa!!!!".into());
     }
     
@@ -174,12 +183,12 @@ where
     let mut zz1 = z1;
     let mut zz2 = z2;
 
-    println!("{:2}: z = {:10.3e}, error = {:10.3e}", 0, zz1, b - w1);
+    // println!("{:2}: z = {:10.3e}, error = {:10.3e}", 0, zz1, b - w1);
 
     for i in 0..max_iter {
         y = rk4(f, [zz2, a], &t);
         w2 = y[n-1][1];
-        println!("{:2}: z = {:10.3e}, error = {:10.3e}", i+1, zz1, b - w2);
+        // println!("{:2}: z = {:10.3e}, error = {:10.3e}", i+1, zz1, b - w2);
 
         if (b - w2).abs() < tol {
             break;
@@ -190,8 +199,8 @@ where
     }
 
     if (b - w2).abs() >= tol {
-        println!("Maximum iter num {} exceeded", max_iter);
-        println!("error estimate is {:10.3e}", (b - w2));
+        // println!("Maximum iter num {} exceeded", max_iter);
+        // println!("error estimate is {:10.3e}", (b - w2));
         //return Err("Napakaaaaaaaaaa!!!!".into());
     }
     
@@ -200,10 +209,16 @@ where
 }
 
 
-#[pyfunction]
-pub fn shooter(a: f64, b: f64, z1: f64, z2: f64, t: Vec<f64>, tol: f64, e:f64, der1: bool, der2: bool) -> PyResult<Vec<[f64; 2]>> {
-    let f = |y: [f64; 2], _t: f64| -> [f64; 2] {
-        naloga(y, e)
+#[pyfunction(signature = (a,b,z1,z2,t,tol,e,der1,der2,extra=false))]
+pub fn shooter(a: f64, b: f64, z1: f64, z2: f64, t: Vec<f64>, tol: f64, e:f64, der1: bool, der2: bool, extra: bool) -> PyResult<Vec<[f64; 2]>> {
+    let f: Box<dyn Fn([f64; 2], f64) -> [f64; 2]> = if extra {
+        Box::new(move |y: [f64; 2], t: f64| {
+            nalogica(y, e, t)
+        })
+    } else {
+        Box::new(move |y: [f64; 2], _t: f64| {
+            naloga(y, e)
+        })
     };
     if der1 && der2 {
         Ok(shoot_derder(&f, a, b, z1, z2, t, tol))
@@ -242,7 +257,7 @@ pub fn sch_rk4(e: f64, y0: [f64; 2], t: Vec<f64>) -> Vec<[f64; 2]> {
         k4 = f([out[i][0] + k3[0], out[i][1] + k3[1]], t[i+1]);
         k4 = [h * k4[0], h * k4[1]];
         out[i+1] = [out[i][0] + ( k1[0] + 2.0 * ( k2[0] + k3[0] ) + k4[0] ) / 6.0, out[i][1] + ( k1[1] + 2.0 * ( k2[1] + k3[1] ) + k4[1] ) / 6.0];
-        // println!("{:?}",out)
+        // // println!("{:?}",out)
     }
     out
 }
