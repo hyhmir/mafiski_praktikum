@@ -155,8 +155,136 @@ diagonaliziramo)?
 
 \subsubsection{Strelska metoda}
 
+Naloge sem se najprej lotil s strelsko metodo. Samo metodo sem implementiral v Rust jeziku, nato pa sem najprej samo malo "streljal" tako da sem našel vrednosti energije, ki zadostijo robnim pogojem. Na ta na;in sem dobil graf \ref{vija}
+
+\begin{figure}[ht]
+\begin{center}
+    \includegraphics[width=12cm]{graphs/vija.pdf}
+    \caption{Graf vrednosti na zadnjem robu pri različnih vrednostih energije. Energije, kjer graf seka x os ustrezajo lastnim energijam}
+    \label{vija}
+\end{center}
+\end{figure}
+
+Ko sem ugotovil, kje se gibljejo lastne energije, sem lahko s pomočjo strelske metode narisal lastne funkcije neskončne potencialne jame. Na ta način sem dobil sliko \ref{lastne}.
+
+Iz grafa seveda takoj prepoznamo še predobro poznane lastne funkcije neskončne potencialne jame, a zanima nas seveda tudi, koliko dejansko odstopajo te funkcije od analitičnih. To seveda ni noben iziv predstaviti na grafu, kot je razvidno na grafu \ref{sherr}
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/nekoncna.pdf}
+    \caption{Lastne funkcije neskončne potencialne jame, dvignjene za ustrezne lastne energije in nekoliko skalirane za lažje branje}
+    \label{lastne}
+\end{center}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/sh_errs.pdf}
+    \caption{Odstopanje numerične od analitične rešitve. Opazimo, da je na koncu intervala natančnost omejena na $10^{-5}$ kar ustreza nastavljeni natančnosti naše metode}
+    \label{sherr}
+\end{center}
+\end{figure}
 
 
+\subsubsection{Diferenčna metoda}
 
+Diferenčna metoda za neskončno jamo je izjemno preprosta, saj efektivno rešujemo zgolj tridiagonalno matriko s samimi 2 na diagonali ter -1 pod in nad diagonalo. Vseeno pa sem se odločil metodo implementirati po zgledu Jonathan Senning - a, čigar koda je na voljo na spletni učilnici. Sam sem pravzaprav metodo zgolj prepisal v Rust.
+
+Z dano metodo sem nato spet preveril lastne funkcije (ki jih nisem grafiral, da se ne ponavljam preveč) in nato na enak način kot poprej, preveril natančnost metode. Rezultati tega so vidni na grafu \ref{fderr}
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/fd_errs.pdf}
+    \caption{Odstopanje numerične od analitične rešitve. Tudi tukaj smo na drugi rob postavlinekolikšno toleranco, kar se opazi v napaki.}
+    \label{fderr}
+\end{center}
+\end{figure}
+
+\subsubsection{Primerjava metod}
+
+Pri metodah je potrebno primerjati seveda kako natančne so ter  kako hitro to natančnost dosežejo. Tako sem pri različnih "zrnatostih" x osi (velikost matrike n) izvedel obe metodi ter primerjal potreben čas in dobljeno natančnost \ref{grafsss}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/err.pdf}
+        % \caption{Rešitve problema za različne vrednosti parametra $k$ pri začetni temperaturi $21 ^\circ C$}
+        % \label{druzina}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{graphs/time.pdf}
+        % \caption{Rešitve problema za različne vrednosti parametra $k$ pri začetni temperaturi $-15 ^\circ C$}
+        % \label{druzina 2}
+    \end{minipage}
+    \label{grafsss}
+    \caption{Grafa največjega odstopanja od analitične vrednosti (levo) in potrebnega časa (desno) v odvisnosti od velikosti intervala. Vidimo, da je diferenčna metoda hitrejša, medtem ko je strelska nekoliko natančnejša in že zelo kmalu doseže podano natančnost. Vidimo pa, da je diferenčna metoda nekoliko bolj predvidljiva kar se odstopanja tiče}
+\end{figure}
+
+\section{Končna potencialna jama}
+
+Primer končne potencialne jame v teoriji ne bi smel biti dosti težji od neskončne, a seveda se je v praksi to izkazalo za precej bolj zapleteno. Najbolj uspešen sem bil z metodo končnih diferenc, kjer pa sem se problema lotil ako, da sem najprej sestavil matriko in potem poiskal lastne vrednosti in funkcije z diagonalizacijo matrike. Ta metoda je namreč edina ki direktno poišče lastne energije in jih ni potrebno še iskati s kakšno bisekcijo.
+
+V tem primeru se je tudi izkazalo z izjemno pomembno, da sem problem reševal na dovolj veliki matriki, oziroma tudi tam kjer je vrednost lastne funkcije res že praktično 0 (v mojem primeru $\pm 5a$). Dokler je bilo to izpolnjeno, sama matrika ni niti rabila biti preveč zrnata, saj, kot smo vdeli že pri neskončni jame, je metoda zelo natančna tudi pri manjših n-jih.
+
+Tako sem v glavnem dobil lastne funkcije, ki sem jih predstavil na grafu \ref{koncna}. Osredotočil sem se zgolj na vezana stanja.
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/koncna.pdf}
+    \caption{Lastne funkcije, predstavljene na enak način kot pri \ref{lastne}. Bralec naj bo pozoren na sodost/lihost funkcij}
+    \label{koncna}
+\end{center}
+\end{figure}
+
+Strelska metoda je v tem primeru predstavila mnogo več dela, saj je bilo res težavno zadeti robne pogoje, tako da sem večino časa porabil ob gledanju ravnih črt. Najlažje sem dobil kaj uspeha, tako da sem upošteval robne pogoje na sredini jame (sodost / lihost). V drugem primeru, sem uspel dobiti le prvo lastno funkcijo in še zanjo je bilo računanje izjemno zamudno, tako da me ni bilo potrebno preveč prepričevati v prvo metodo.
+
+\section{Dodatna naloga}
+
+Določi nekaj najnižjih lastnih funkcij $\psi$
+in lastnih vrednosti $E=k^4$ diferencialne enačbe
+\begin{equation*}
+\Dd[4]{\psi}{x} - E\psi = 0
+\end{equation*}
+(pozor, minus) na intervalu $[-a/2,a/2]$ z robnimi pogoji
+\begin{equation*}
+\psi(\pm a/2) = \psi''(\pm a/2) = 0
+\end{equation*}
+z diferenčno metodo oziroma diagonalizacijo.  (Strelska metoda
+pri robnih problemih četrtega reda ni najbolj primerna.)
+Namesto četrtega odvoda uporabi izraz za četrto diferenco,
+tako da ima $i$-ta diferenčna enačba obliko
+\begin{equation*}
+\psi_{i-2} - 4\psi_{i-1} + 6\psi_i - 4\psi_{i+1} + \psi_{i+2}
+= \underbrace{h^4k^4}_\lambda \psi_i \>.  
+\end{equation*}
+Ko diskretiziraš še robne pogoje, podobno kot pri enačbi
+drugega reda rešuješ petdiagonalni sistem linearnih enačb.
+
+\subsection{Diferenčna metoda}
+
+To je edina metoda, ki sem jo uporabil pri reševanju dodatne naloge. Uporabil sem jo tako, da sem konstruiral matriko po navodilih, nato pa sem poiskal lastne vrednosti in vektorje s pomočjo "numpy" vgrajenih funkcij.
+
+Tako sem dobil naslednje lastne funkcije \ref{ekstra}
+
+\begin{figure}[H]
+\begin{center}
+    \includegraphics[width=10cm]{graphs/exstra.pdf}
+    \caption{Lastne funkcije prikazane na dosedaj že dobro poznani način}
+    \label{ekstra}
+\end{center}
+\end{figure}
+
+Globje kot to se v dodatno nalogo nisem poglobil.
+
+\section{Zaključek}
+
+Čeprav sta mi strelska metoda in metoda končnih diferenc zelo všeč še iz lanskoletnega predmeta numeričnih metod, mi njuna raba za iskanje lastnih funkcij ni bila najbolj po godu. 
+
+Kljub temu sem vesel, da sem porabil čas za implementacijo teh metod, saj mi bojo mogoče na kakšni točki prišle prav.
+
+Veliko sivih las mi je tokrat povzročil tudi Rust, ki je tokrat potreboval nekoliko več prepričevanja, preden se je odločil "\ compilati". Ko pa je to odločitev končno sprejel, je s tem prinesel tako veselje, da je bilo skoraj vredno frustracij. Vseeno mislim, da bom moral vsaj nekaj naslednjih nalog narediti v Pythonu, saj ima le ta nekoliko boljši vpliv na moje duševno zdravje.
 
 \end{document}
