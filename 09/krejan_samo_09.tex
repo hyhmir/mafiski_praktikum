@@ -291,6 +291,26 @@ Implementacija Fourierove metode s periodičnimi pogoji je bila še lažja, in d
     \label{perf-gauss}
 \end{figure}
 
-Kvalitativno sta grafa predvsem ob majhnih časih zelo podobna, veliko razliko pa opazimo proti koncu, ko homogeni robni pogoji očino stremijo proti ničli, medtem ko periodični stremijo proti neki "povprečni" vrednosti
+Kvalitativno sta grafa predvsem ob majhnih časih zelo podobna, veliko razliko pa opazimo proti koncu, ko homogeni robni pogoji očino stremijo proti ničli, medtem ko periodični stremijo proti neki "povprečni" vrednosti. To lahko pojasnimo s fizikalno interpretacijo. Namreč, primer s homogenimi robnimi pogoji je očitno lahko interpretiran kot palica med dvema toplotnima rezervarjoma s konstantno temperaturo 0, kamor lahko palica izvrže poljubno količino toplote. Na drugi strani, pa imamo periodične robne pogoje, ki "zagotovijo" da ne steče nič toplote iz palice, torej je ekvivalentno temu, da palico vpnemo z idealnim izolatorjem. Očitno se torej palica zgolj termalizira.
+
+
+\subsection{Kolokacijska metoda}
+
+Za Fourierovo sem implementiral še kolokacijsko metodo. Implementacija le te je bila preprostejša od Fourierjeve, čepraj je potrebovala več pisanja. Pravzaprav sem preprosto sledil receptu. Morda je sicer razlog za dejstvom, da se mi je kolokacijska implementacija zdela lažja, tudi ta, da sem videl sošolčevo implementacijo, tako da sem imel precej dobro idejo o tem, kaj je treba narediti še predno sem se lotil dela sam.
+
+Kakorkoli že, s kolokacijsko metodo sem dobil slednje rezultate \ref{homp-gauss}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{graphs/homp_gauss.pdf}
+    \caption{Evolucija temperature skozi čas za homogene robne pogoje - izračunano s kolokacijsko metodo}
+    \label{homp-gauss}
+\end{figure}
+
+\subsection{Primerjava metod}
+
+Na prvi pogled sta rezultata obeh metod zelo podobna, če ne celo identična
+
+
 
 \end{document}
