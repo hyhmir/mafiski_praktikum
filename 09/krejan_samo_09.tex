@@ -309,8 +309,102 @@ Kakorkoli že, s kolokacijsko metodo sem dobil slednje rezultate \ref{homp-gauss
 
 \subsection{Primerjava metod}
 
-Na prvi pogled sta rezultata obeh metod zelo podobna, če ne celo identična
+Na prvi pogled sta rezultata obeh metod zelo podobna, če ne celo identična, a podrobna analiza pokaže, da temu ni tako. Če na enak način kot smo narisali potek časovnega profila skozi čas, narišemo tudi razliko med rezultatoma obeh metod, dobimo slednji rezultat \ref{diff-gauss}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{graphs/diff_gauss.pdf}
+    \caption{Razlika temperaturnega profila skozi čas med Fourierovo in kolokacijsko metodo}
+    \label{diff-gauss}
+\end{figure}
+
+Vidimo, da se razlikujeta za največ $0.01$ pri $N = 100$, kar je relativno vredu. Občutljive razlike med metodama opazimo šele ko merimo porabljen čas in spomin, ki ga vsaka izmed metod rabi pri določenem $N$. Rezultata teh meritev sem prikazal na grafih \ref{time-gauss} in \ref{mem-gauss}.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{graphs/time_gauss.pdf}
+    \caption{Primerjava potrebnega časa v odvisnosti od $N$ za obe metodi}
+    \label{time-gauss}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{graphs/mem_gauss.pdf}
+    \caption{Primerjava potrebnega spomina v odvisnosti od $N$ za obe metodi}
+    \label{mem-gauss}
+\end{figure}
+
+Vidimo, da čeprav imata metodi enako časovno in spominsko asimtomatsko zahtevnost, je Fourierova občutno boljša, sploh kar se tiče potrebnega časa. Tu je seveda potrebno poudariti, da to dejstvo velja specifično samo za mojo implementacijo, ki je po vsej verjetnosti sub-optmalna. Kolokacijska metoda uporabi tudi več nativnega Pythona, kar verjetno že samo po sebi precej upočasni zadevo. Poleg tega moram poudariti tudi, da je to moja prva izkušnja z merjenjem porabe pomnilnika, za kar sem uporabil v Python vgrajeno orodje 'tracemalloc', ki naj bi merilo le spomin dodeljen objektom, ki jih med komando 'start' in 'stop' ustvari Python. Ker nisem dovolj vešč nisem popolnoma prepričan, da je to pravilna metoda, za dano situacijo, a od tu naprej predpostavljam, da je.
+
+
+\section{Dodatna naloga}
+
+Izberi si še kakšen primer začetnih pogojev,recimo:
+$$
+T(x,0) = f(x) = \sin (\pi x/a)
+$$
+in preizkusi obe metodi.
+
+\subsection{Fourierova metoda}
+
+Ker sem imel metodo že implementirano, ni ostalo veliko dela, le zamenjati je bio potrebno začetne pogoje, in tako sem dobil slednji rezultat \ref{homf-sin}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{graphs/homf_sin.pdf}
+    \caption{Evolucija temperature skozi čas za homogene robne pogoje - izračunano s Fourierovo metodo}
+    \label{homf-sin}
+\end{figure}
+
+Rezultat je kvalitativno približno točno to, kar bi pričakovali. Edini detajl, ki se mi je zdel nekoliko neintuitiven je ta, da vidimo nekako le nižanje temperature, ne pa tudi širjenja nje v stran, kot smo to opazili pri Gaussovem začetnem pogoju.
+
+
+\subsection{Kolokacijska metoda}
+
+Tudi s kolokacijsko metodo nisem imel preveč dela, saj je bilo spet potrebno le spremeniti začetne pogoje. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{graphs/perf_sin.pdf}
+    \caption{Evolucija temperature skozi čas za periodične robne pogoje - izračunano s Fourierovo metodo}
+    \label{perf-sin}
+\end{figure}
+
+Na ta način sem dobil rezultat, ki je seveda kvalitativno identičen rezultatu s Fourierovo metodo \ref{perf-sin}. 
+
+\subsection{Primerjava metod}
+
+Tako kot pri prvem delu naloge, sem tudi tokrat primerjal metodi skozi tri metrike: natančnost \ref{diff-sin}, čas \ref{time-sin} in spomin \ref{mem-sin}. O rezultatih, bi lahko napisal točno iste besede kot sem jih že v prvem delu naloge, za to se na tej točki raje ne bom ponavljal.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=15cm]{graphs/diff_sin.pdf}
+    \caption{Razlika temperaturnega profila skozi čas med Fourierovo in kolokacijsko metodo}
+    \label{diff-sin}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{graphs/time_sin.pdf}
+    \caption{Primerjava potrebnega časa v odvisnosti od $N$ za obe metodi}
+    \label{time-sin}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{graphs/mem_sin.pdf}
+    \caption{Primerjava potrebnega spomina v odvisnosti od $N$ za obe metodi}
+    \label{mem-sin}
+\end{figure}
+
+\section{Zaključek}
+
+Naloga mi je bila všeč, sploh Kolokacijska metoda se mi je zdela zelo elegantna, za to mi je bilo kar nekoliko žal, ko jo je premagala Fourierova. Saj mi je tudi Fourierova zelo všeč, samo zdi se mi nekoliko preveč uporabljena. Mogoče bi bolj užival v njej, če ne bi hodil k Mafiji.
+
+Nalogo sem izkoristil tudi, da sem se naučil nekaj novih zadev, med drugim tudi nekaj o merjenju porabe spomina. Ko sem se izobraževal o tem, kako je spomin zapisan v računalniku, sem se spet navdušil nad "low-level" programskimi jeziki, tako da se bom v prihodnosti mordaspet poslužil kakšnega takega jezika. Bomo kmalu videli, ali bom odločitev obžaloval :)
 
 
 \end{document}
