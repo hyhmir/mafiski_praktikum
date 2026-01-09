@@ -268,8 +268,156 @@ Napake so bile v obeh delih naloge zares precej velike. Smiselno bi bilo uporabi
 
 \subsection{Metode višjega reda}
 
+Če sem čisto iskren, sem skoraj pozabil vključiti metode višjega reda, zato sem jih nekoliko nerodno umestil sem, a se mi zdi, da je razvrstitev še vseeno smiselna. Edina potrebna sprememba v implementaciji je bila v tem kako zgenerirati matriko $A$, kjer pa je bilo preprosto potrebno slediti receptu opisanemu na predavanjih. Tako sem implementiral še metodo drugega in tretjega reda, s katerima sem pravzaprav ponovil delo in se posledično tudi ne bom ukvarjal preveč z besedami, pač pa bom le predstavil rezultate.
+
+\subsubsection{Harmonski potencial}
+
+Najprej sem z višjim redom narisal razvoj v harmonskem otencialu \ref{nihaj}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/10nihaj-r.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/10nihaj-rr.pdf}
+\end{minipage}
+\label{nihaj}
+\caption{Časovni razvoj valovnega paketa izračunan numerično, za drugi red (levo) in tretji red (desno)}
+\end{figure}
+
+Ter nato še napako posamezne metode \ref{nihaj-err}
 
 
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/10nihaj-r-err.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/10nihaj-rr-err.pdf}
+\end{minipage}
+\label{nihaj-err}
+\caption{Napaka metode drugega reda (levo) in tretjega reda (desno) skozi čas}
+\end{figure}
+
+\subsubsection{Prost valovni paket}
+
+Najprej sem z višjim redom narisal razvoj prostega valovnega paketa skozi čas \ref{gaussy}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/gauss-r.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/gauss-rr.pdf}
+\end{minipage}
+\label{gaussy}
+\caption{Časovni razvoj valovnega paketa izračunan numerično, za drugi red (levo) in tretji red (desno)}
+\end{figure}
+
+Ter nato še napako posamezne metode \ref{gaussy-err}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/gauss-r-err.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}{0.49\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/gauss-rr-err.pdf}
+\end{minipage}
+\label{gaussy-err}
+\caption{Napaka metode drugega reda (levo) in tretjega reda (desno) skozi čas}
+\end{figure}
+
+Dejstva, da se napaka s časom manjša nisem znal pojasniti.
+
+\subsubsection{Primerjava različnih redov metod}
+
+
+Primerjal sem natančnost, hitrost in spominsko zahtevnost pri prvem, drugem in tretjem redu metode, za deset nihajev in na ta način dobil slednje rezultate \ref{erry}, \ref{timey} in \ref{memy}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/max-diff-o.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/max-diff-r.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/max-diff-rr.pdf}
+\end{minipage}
+\label{erry}
+\caption{Od leve proti desni maksimalna razlika med numerično in analitično rešitvijo za prvi, drugi in tretji red.}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/time-o.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/time-r.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/time-rr.pdf}
+\end{minipage}
+\label{timey}
+\caption{Od leve proti desni potreben čas za izračun za prvi, drugi in tretji red.}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/mem-o.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/mem-r.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{graphs/mem-rr.pdf}
+\end{minipage}
+\label{memy}
+\caption{Od leve proti desni potreben spomin za izračun za prvi, drugi in tretji red.}
+\end{figure}
+
+
+Rezultati kažejo na majhne razlike med metodami - razlike ki sploh niso statistično pomembne. Tukaj je sicer treba priznati, da nisem nobene matrike optimiziral, tako da sem vedno shranil kar celo matriko $A$ in s tem računsko naredil vse tri metode enako zahtevne. Navkljub rezultatom primerjave pa se lahko samo s kvalitativnim ogledom rezultatov, strinjamo, da sta metodi višjega reda bolj uspešni - sploh pri prostem valovnem paketu.
+
+\section{Zaključek}
+
+Naloga se je začela zelo obetavno. Užival sem v implementaciji metod in v lastni zavestni odločitvi, da se omejim na uporabo Pythona s prijaznim Numpy paketom, saj si ne predstavljam slednjega implementirati v nižje-nivojnem jeziku. Vseeno pa mi je tudi tukaj uspelo priti do težav, ker nisem dovolj posplošil funkcij in parametrov v kodi in sem imel zato, ker sem delal v Jupytrovem zvezku, kar nekaj težav s tem, kdaj ima katera spremenljivka katero vrednost. Pomagalo bi seveda tudi boljše poimenovanje spremenljivk in manj nepremišljenega "copy-pastanja". A ko sem že videl ciljno ravnino, se mi ni zdelo vredno spreminjati kode, čeprav bi mi to morda celo olajšalo delo. No in seveda se opravičujem tudi vam, če se boste lotili brati kodo za mano - ne predstavljam si, da zna biti prijetna izkušnja.
 
 
 \end{document}
