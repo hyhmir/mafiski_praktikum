@@ -1,0 +1,254 @@
+\documentclass[slovene,11pt,a4paper]{article}
+\usepackage[margin=2cm,bottom=3cm,foot=1.5cm]{geometry}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5ex}
+
+\usepackage[pdftex]{graphicx}
+\DeclareGraphicsExtensions{.pdf,.png}
+
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathrsfs}
+\usepackage[usenames]{color}
+\usepackage[slovene]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{siunitx}
+\usepackage{hyperref}
+\usepackage{float}
+
+\def\phi{\varphi}
+\def\eps{\varepsilon}
+\def\theta{\vartheta}
+
+\newcommand{\thisyear}{2025/26}
+
+\renewcommand{\Re}{\mathop{\rm Re}\nolimits}
+\renewcommand{\Im}{\mathop{\rm Im}\nolimits}
+\newcommand{\Tr}{\mathop{\rm Tr}\nolimits}
+\newcommand{\diag}{\mathop{\rm diag}\nolimits}
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\ddd}{\mathrm{d}}
+\newcommand{\ii}{\mathrm{i}}
+\newcommand{\lag}{\mathcal{a}\!}
+\newcommand{\ham}{\mathcal{H}\!}
+\newcommand{\four}[1]{\mathcal{F}\!\left(#1\right)}
+\newcommand{\bigO}[1]{\mathcal{O}\!\left(#1\right)}
+\newcommand{\sh}{\mathop{\rm sinh}\nolimits}
+\newcommand{\ch}{\mathop{\rm cosh}\nolimits}
+\renewcommand{\th}{\mathop{\rm tanh}\nolimits}
+\newcommand{\erf}{\mathop{\rm erf}\nolimits}
+\newcommand{\erfc}{\mathop{\rm erfc}\nolimits}
+\newcommand{\sinc}{\mathop{\rm sinc}\nolimits}
+\newcommand{\rect}{\mathop{\rm rect}\nolimits}
+\newcommand{\ee}[1]{\cdot 10^{#1}}
+\newcommand{\inv}[1]{\left(#1\right)^{-1}}
+\newcommand{\invf}[1]{\frac{1}{#1}}
+\newcommand{\sqr}[1]{\left(#1\right)^2}
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\thalf}{\tfrac{1}{2}}
+\newcommand{\pd}{\partial}
+\newcommand{\Dd}[3][{}]{\frac{\ddd^{#1} #2}{\ddd #3^{#1}}}
+\newcommand{\Pd}[3][{}]{\frac{\pd^{#1} #2}{\pd #3^{#1}}}
+\newcommand{\avg}[1]{\left\langle#1\right\rangle}
+\newcommand{\norm}[1]{\left\Vert #1 \right\Vert}
+\newcommand{\braket}[2]{\left\langle #1 \vert#2 \right\rangle}
+\newcommand{\obraket}[3]{\left\langle #1 \vert #2 \vert #3 \right \rangle}
+\newcommand{\hex}[1]{\texttt{0x#1}}
+
+\renewcommand{\iint}{\mathop{\int\mkern-13mu\int}}
+\renewcommand{\iiint}{\mathop{\int\mkern-13mu\int\mkern-13mu\int}}
+\newcommand{\oiint}{\mathop{{\int\mkern-15mu\int}\mkern-21mu\raisebox{0.3ex}{$\bigcirc$}}}
+
+\newcommand{\wunderbrace}[2]{\vphantom{#1}\smash{\underbrace{#1}_{#2}}}
+
+\renewcommand{\vec}[1]{\overset{\smash{\hbox{\raise -0.42ex\hbox{$\scriptscriptstyle\rightharpoonup$}}}}{#1}}
+\newcommand{\bec}[1]{\mathbf{#1}}
+
+
+\newcommand{\bi}[1]{\hbox{\boldmath{$#1$}}}
+\newcommand{\bm}[1]{\hbox{\underline{$#1$}}}
+
+% \newcommand{\bec}[1]{\mathbf{#1}}
+
+
+\title{
+\sc\large Matematično-fizikalni praktikum \thisyear\\
+\bigskip
+\bf\Large 11.~naloga: Reševanje PDE z metodo Galerkina
+}
+\author{Samo Krejan, 28231092}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-0.5cm}
+
+Pri opisu enakomernega laminarnega toka viskozne in nestisljive
+tekočine po dolgi ravni cevi pod vplivom stalnega tlačnega
+gradienta $p^{\prime}$ se Navier-Stokesova enačba poenostavi
+v Poissonovo enačbo
+\begin{equation*}
+  \nabla^2 v = \Delta v = - \frac{p^\prime}{\eta}\>,
+\end{equation*}
+kjer je $v$ vzdolžna komponenta hitrosti, odvisna samo  od
+koordinat preseka cevi, $\eta$ pa je viskoznost tekočine.
+Enačbo rešujemo v notranjosti preseka cevi, medtem ko
+je ob stenah hitrost tekočina enaka nič.  Za pretok velja
+Poiseuillov zakon
+\begin{equation*}
+  \Phi = \int_S v\dd S = C\,\frac{p' S^2}{ 8\pi\eta} \>,
+\end{equation*}
+kjer je koeficient $C$ odvisen samo od oblike preseka cevi
+($C=1$ za okroglo cev).  Določili bomo koeficient za
+polkrožno cev z radijem $R$. V novih spremenljivkah $\xi=r/R$
+in $u=v \eta/(p^\prime R^2)$ se problem glasi
+\begin{equation*}
+\Delta u(\xi,\phi) = -1 \>,\qquad
+u(\xi=1,\phi)=u(\xi,0)=u(\xi,\phi=\pi)=0 \>,
+\end{equation*}
+\begin{equation*}
+  C = 8\pi \iint \frac{u(\xi,\phi)\,\xi\dd \xi \dd\phi}{ (\pi/2)^2} \>.
+\end{equation*}
+
+Če poznamo lastne funkcije diferencialnega operatorja za določeno
+geometrijo\footnote{Spomni se na primer na vodikov atom v sferični geometriji,
+kjer smo imeli $\widehat{L}^2 Y_{lm}(\theta,\phi) = \hbar^2 l(l+1)
+Y_{lm}(\theta,\phi)$ in $\widehat{L}_z Y_{lm}(\theta,\phi) = m \hbar
+Y_{lm}(\theta,\phi)$.} se reševanje parcialnih diferencialnih enačb
+včasih lahko prevede na razvoj po lastnih funkcijah. Da bi se izognili
+računanju lastnih (za ta primer Besselovih) funkcij in njihovih ničel,
+ki jih potrebujemo v razvoju, lahko zapišemo aproksimativno
+rešitev kot linearno kombinacijo nekih poskusnih ({\sl trial\/})
+funkcij
+\begin{equation}
+\tilde{u}(\xi,\phi) = \sum\limits_{i=1}^N  a_i \Psi_i(\xi,\phi),
+\label{eq:trials}
+\end{equation}
+za katere ni nujno, da so ortogonalne, pač pa naj zadoščajo
+robnim pogojem, tako da jim bo avtomatično zadoščala tudi
+vsota (\ref{eq:trials}). Ta pristop nam pride prav v kompleksnejših geometrijah,
+ko je uporabnost lastnih funkcij izključena in potrebujemo robustnejši pristop.
+Približna funkcija $\tilde{u}$ seveda ne zadosti Poissonovi enačbi: preostane majhna napaka $\varepsilon$
+\begin{equation*}
+  \Delta \tilde{u}(\xi,\phi) + 1 = \varepsilon(\xi,\phi) \>.
+\end{equation*}
+Pri metodi Galerkina zahtevamo, da je napaka ortogonalna
+na vse poskusne funkcije $\Psi_i$,
+\begin{equation*}
+  (\varepsilon,\Psi_i) = 0 \>, \qquad  i = 1,2,\dots, N \>.
+\end{equation*}
+V splošnem bi lahko zahtevali tudi ortogonalnost $\varepsilon$
+na nek drug sistem utežnih ({\sl weight\/}) oziroma testnih
+({\sl test\/}) funkcij $\Psi_i$.  Metoda Galerkina je poseben
+primer takih metod ({\sl Methods of Weighted Residuals\/})
+z izbiro $\Psi_i = \Psi_i$.  Omenjena izbira vodi do sistema
+enačb za koeficiente $a_i$
+\begin{equation}
+  \sum_{j=1}^N A_{ij} a_j = b_i\>, \qquad  i = 1,2,\dots, N \>,
+  \label{eq:sistem}
+\end{equation}
+\[
+A_{ij} = (\Delta \Psi_j,\Psi_i) \>, \qquad b_i = (-1,\Psi_i) \>,
+\]
+tako da je koeficient za pretok enak
+\begin{equation*}
+C =-\frac{32}{ \pi} \sum_{ij}  b_i A_{ij}^{-1} b_j \>.
+\end{equation*}
+Za kotni del poskusne funkcije obdržimo eksaktne funkcije
+$\sin((2m+1)\phi)$, Besselove funkcije za radialni del
+pa nadomestimo s preprostejšimi funkcijami $\xi^{2m+1}(1-\xi)^n$.
+Pozor: indeks $i$ pomeni seveda dvojni indeks (šteje obenem
+$m$ in $n$)\footnote{Glej tudi prilogo na spletni učilnici.}.  Zaradi ortogonalnosti po $m$ razpade matrika $A$ v bloke,
+obrneš pa jo lahko s kako pripravljeno rutino, npr. s spodnjim
+in zgornjim trikotnim razcepom {\tt ludcmp} in {\tt lubksb} iz NRC.
+
+\section{Naloga}
+
+Izračunaj koeficient $C$.  V ta namen moraš dobiti matriko $A$
+in vektor $b$; preuči, kako je natančnost rezultata
+(vsote za koeficient $C$) odvisna od števila členov
+v indeksih $m$ in $n$. Zaradi ortogonalnosti
+po $m$ lahko oba učinka preučuješ neodvisno.
+
+
+\subsection{Računanje $C$}
+
+Ravno pred delom naloge, sem si uredil popolnoma nov sistem, tako da sem se odločil, da je dana naloga odlična za preverjanje komputacijskih limit. Kot bo bralec kmalu videl, je bila naloga iz tega vidika res idealna.
+
+\subsubsection{Osnovna metoda}
+
+Začel sem z najosnovnejšo implementacijo, ki jo je bilo tudi najlažje implementirati. Glaven korak metode ustvari matriko $A$ po receptu, ki je bil izpeljan na predavnjih. Nato z namenom, da bi se znebili potrebe po inverzih matrike, rešimo sistem enačb:
+
+$$
+A\vec{a} = \vec{b}
+$$
+
+in nazadnje le še izračunamo $C$ kot:
+
+$$
+C = - \frac{32}{\pi} \vec{b}\cdot\vec{a}
+$$
+
+Dano metodo sem optimistično otvoril z $N=100$ in $M=100$ in presenečen ugotovil, da je "šlo skozi" (v pičlih desetih sekundah) in mi dalo rezultat:
+
+$$
+C = 0.7577218680
+$$
+
+Ves navdušen sem se nato lotil iskanja mej metode, a sem hitro ostal razočaran, saj sem res hitro zadel zid zaradi spominske potratnosti metode. Ker metoda res ustvari celotno matriko $A$, le ta porabi precej prostora, kar sem najprej spoznal na lep način, ko me je Python še opozoril, da ne mora dodeliti objektu 2TiB prostora. Kasneje pa, ko sem se približal pametnim mejam so se opozorila umaknila, problemi pa so ostali in tako mi je računalnik trikrat popolnoma zmrznil in postal popolnoma neodziven. Takrat sem vedel, da če želim z delom nadaljevati, moram metodo najprej optimizirati.
+
+
+\subsubsection{Bločna metoda}
+
+Prva optimizacija je sledila opazki, da je matrika $A$ res tako zelo bločna. To seveda pomeni, da lahko tudi enačbo:
+
+$$
+A\vec{a} = \vec{b}
+$$
+
+rešujemo bločno in posledično po delih. Ta metoda se je popolnoma znebila problemov z dodeljavanjem spomina, saj je bilo potrebno konstruirati le vsak posamezen blok posebaj. Tako je računalnik ostal uporaben tudi med računanjem.
+
+Je pa prišel do izraza drugačen problem - ko večamo $M$, postajajo posamezni bloki matrike $A$ vedno bolj singularni. Paket Scipy je hitro začel s pošiljanjem opozoril in ko sem ga prignal še nekoliko dlje, je metoda popolnoma odpovedala.
+
+ChatGPT mi je na tej točki svetoval naj rešim problem s \textit{Tikhonovo regulacijo}\footnote{\url{https://en.wikipedia.org/wiki/Ridge_regression}}. Z le to se rešimo singularnosti tako, da našim blokom matrike $A$ dodamo identitetno matriko pomnoženo s čim manjšim faktorjem, ki še deluje. Čeprav je metoda tako postala stabilna in predvsem \textit{vedno delujoča}, je sproducirala rezultat z relativno veliko napako (0.1\% pri $N=M=500$) - izkaže se, da namerno "kvariti" matriko $A$ ni najboljši način.
+
+
+\subsubsection{Spektralna dekonstrukcija}
+
+Ideja te podmetode sloni na dejstvu, da ko rešujemo:
+
+$$
+A\vec{a} = \vec{b}
+$$
+
+nas rešitev za $a$ pravzaprav ne zanima in izkaže se, da lahko njen izračun preskočimo. Opremo se namreč na dejstvo, da so bloki matrike $A$ simetrični, ter imajo zato unitarno dekompozicijo:
+
+$$
+A^{(m)} = U \Lambda U^T
+$$,
+
+kjer je $U$ sestavljena iz lastnik vektorjev $u_k$. Iz tega sledi:
+
+$$
+b^TA^{(m)}b = b^TU \Lambda^{-1} U^Tb = \sum_{k}^{}\frac{(u_k^Tb)^2}{\lambda_k}
+$$
+
+Tega sedaj ni težko implementirati, edina težava, ki se pojavi je možnost $\lambda_k = 0$. V teoriji nas to ne skrbi, saj je takrat limita $\frac{(u_k^Tb)^2}{\lambda_k}=0$, v praksi, pa le ignoriramo res majhne $\lambda_k$, saj končni vsoti prinesejo zelo malo.
+
+Z dano metodo je izračun za $M=N=100$ vzel zgolj $0.2$ sekunde in nam dal praktično identičen rezultat kot osnovna metoda, tako da sem precej prepričan v veljavnost metode.
+
+Po uspehu z implementacijo sem sicer postal zelo ambiciozen in se lotil računanja primera z $M =N =3000$, ki je vzel dobre tri ure in podal vrednost:
+
+$$
+C = 0.7577221531,
+$$
+
+ki jo od te točke naprej tretiram kot "eksaktna vrednost".
+
+
+\subsection{Uspešnost metode}
+
+
+
+\end{document}
